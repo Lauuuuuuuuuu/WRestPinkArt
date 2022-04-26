@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"></script>
+    <title>PinkArt</title>
+</head>
+<header style="background-color: #d8b1b1;">
+
+    <div class="texto-centrado">
+        <a href="./artistas.html"><img class="logo-artist" src="./Images/pinkart2.png" alt=""></a>
+        ESTAS SON LAS ÚLTIMAS OBRAS AGREGADAS
+    </div>
+</header>
+<body>
+<center><div id="images" class="images-tables2" style="margin-top: 5%;">  </div></center>
+<script>
+    var imagesDiv = document.getElementById("images")
+
+    fetch("AgregarObras")
+        .then(response => response.json())
+        .then(images => {
+            images.map(image=>{
+                let imgElem = document.createElement("img");
+                imgElem.src= "./"+image;
+                imgElem.width = 500;
+
+                imagesDiv.appendChild(imgElem);
+
+            })
+
+
+        })
+
+
+</script>
+</body>
