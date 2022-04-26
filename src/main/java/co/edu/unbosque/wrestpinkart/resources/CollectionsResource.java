@@ -14,8 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-@Path("/users")
-public class UsersResource {
+@Path("/users/{username}/collections")
+public class CollectionsResource {
 
     @Context
     ServletContext context;
@@ -37,18 +37,16 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response createForm(
-
             @FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("role") String role
     ) {
-
         String contextPath =context.getRealPath("") + File.separator;
-        System.out.println(username);
+
         try {
             Usuario usuario = new AgregarUsuario().crearUsuario(username, password, role, "0",contextPath);
 
-            return Response.created(UriBuilder.fromResource(UsersResource.class).path(username).build())
+            return Response.created(UriBuilder.fromResource(CollectionsResource.class).path(username).build())
                     .entity(usuario)
                     .build();
         } catch (IOException e) {
