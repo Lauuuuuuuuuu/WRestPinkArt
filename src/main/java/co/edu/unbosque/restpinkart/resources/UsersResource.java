@@ -4,7 +4,7 @@ package co.edu.unbosque.restpinkart.resources;
 
 import co.edu.unbosque.restpinkart.dtos.ExceptionMessage;
 import co.edu.unbosque.restpinkart.dtos.Usuario;
-import co.edu.unbosque.restpinkart.services.AgregarUsuario;
+import co.edu.unbosque.restpinkart.services.Operaciones;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -26,7 +26,7 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response list() {
         try {
-            List<Usuario> usuarios = new AgregarUsuario().getUsers();
+            List<Usuario> usuarios = new Operaciones().getUsers();
 
             return Response.ok()
                     .entity(usuarios)
@@ -50,7 +50,7 @@ public class UsersResource {
         String contextPath =context.getRealPath("") + File.separator;
         System.out.println(username);
         try {
-            Usuario usuario = new AgregarUsuario().crearUsuario(username, password, role, "0",contextPath);
+            Usuario usuario = new Operaciones().crearUsuario(username, password, role, "0",contextPath);
 
             return Response.created(UriBuilder.fromResource(UsersResource.class).path(username).build())
                     .entity(usuario)
@@ -66,7 +66,7 @@ public class UsersResource {
     public Response get(@PathParam("username") String username) {
         try {
             System.out.println(username);
-            List<Usuario> users = new AgregarUsuario().getUsers();
+            List<Usuario> users = new Operaciones().getUsers();
 
             Usuario usuario = users.stream()
                     .filter(u -> u.getUsername().equals(username))
