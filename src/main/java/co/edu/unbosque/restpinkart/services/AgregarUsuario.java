@@ -1,5 +1,5 @@
-package co.edu.unbosque.wrestpinkart.services;
-import co.edu.unbosque.wrestpinkart.dtos.Usuario;
+package co.edu.unbosque.restpinkart.services;
+import co.edu.unbosque.restpinkart.dtos.Usuario;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -7,7 +7,6 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 
 
 public class AgregarUsuario {

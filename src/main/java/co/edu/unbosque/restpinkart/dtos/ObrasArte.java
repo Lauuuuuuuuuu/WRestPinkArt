@@ -1,4 +1,4 @@
-package co.edu.unbosque.wrestpinkart.dtos;
+package co.edu.unbosque.restpinkart.dtos;
 
 import java.io.File;
 

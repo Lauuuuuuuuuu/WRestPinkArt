@@ -1,7 +1,8 @@
-alert("hola");
-loginForm.onsumbit = async (e) =>{
-    e.preventDefault();
+const form = document.querySelector("form")
 
+form.onsubmit= async (e) =>{
+    e.preventDefault();
+    alert("hola");
 
     let user = document.getElementById("textbox-login").value;
 

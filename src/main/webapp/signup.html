@@ -14,10 +14,10 @@
     <div class="header-container">
         <div class="search-bar">
             <img class="logo" src="./Images/pinkart2.png" alt="logo">
-            <form class="mainSearch" action="search">
+            <div class="mainSearch" >
                 <input class="search" type="text" name="search" placeholder="inicia tu busqueda más rosada y efectiva">
                 </button>
-            </form>
+            </div>
             <img class=""
                  src=""
                  alt="">
@@ -51,38 +51,102 @@
 
                 </ul>
             </div>
-
         </div>
-        <header>
-
-            <form id="signUp">
-                <div class="module">
-
-                    <div class="form">
-                        <label for="name1">Nombre:</label>
-                        <input type="text" name= "username" class="form-control" id="name1" placeholder="Nombre" required>
-                    </div>
-
-                    <div class="form" style="font-family: 'Abel', sans-serif;">
-                        <label for="roleInput">Rol</label>
-                        <select name = "role" class="form" id="roleInput" aria-describedby="role">
-                            <option style="font-family: 'Abel', sans-serif;"> Artista</option>
+    </div>
+</header>
 
 
+<div>
+    <form id="signUp" >
+        <div class="module">
+            <div >
+                Nombre:
+                <input type="text" name= "username" class="form-control" id="name1" placeholder="Nombre" required >
+            </div>
+            <div  style="font-family: 'Abel', sans-serif;">
+                Rol
+                <select name = "role" class="form" id="roleInput" aria-describedby="role">
+                    <option style="font-family: 'Abel', sans-serif;"> Artista</option>
+                    <option style="font-family: 'Abel', sans-serif;">Comprador</option>
+                </select>
+            </div>
+            <div style="font-family: 'Abel', sans-serif;">
+                Contraseña:
+                <input type="password" name="password" class="form-control" id="exampleInputPassword1">
+            </div>
+            <center>
+                <input type="submit" class="button" style="font-family: 'Abel', sans-serif;" value="Crear Cuenta">
+            </center>
+        </div>
+    </form>
+</div>
 
-                            <option style="font-family: 'Abel', sans-serif;">Comprador</option>
-                        </select>
-                    </div>
+<script src="Js/Signup.js">
+   /* const form = document.querySelector("form")
 
-                    <div class="form" style="font-family: 'Abel', sans-serif;">
-                        <label for="exampleInputPassword1">Contraseña</label>
-                        <input type="password" name="password" class="form-control" id="exampleInputPassword1">
-                    </div>
-                    <center>
-                    <input type="submit" class="btn btn-primary; btn-box-sign-up" style="font-family: 'Abel', sans-serif;" value="Crear Cuenta">
-                    </center>
-                </div>
-            </form>
+    form.onsubmit = async (e)=> {
+        e.preventDefault()
+        const formData =new FormData(form);
+
+        try {
+            let response = await fetch('./api/users/form', {
+                method: 'POST',
+                headers: {
+
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+
+                body: new URLSearchParams(formData),
+
+            });
+            let result = await response.json();
+            console.log(result);
+        }
+        catch (r) {
+            console.log(r + "!error.!")
+        }
+    }
+    if (document.getElementById("roleInput").value == "Artista"){
+        window.location.href ="http://localhost:8080/RestPinkArt-1.0-SNAPSHOT/artistas.html"
+    }*/
+</script>
+<!--<script >-->
+<!--    const form = document.querySelector("form")-->
+<!--    form.onsumbit = async (e)=> {-->
+<!--    e.preventDefault()-->
+<!--        let pa =document.getElementById("name1").value-->
+<!--        let name = signUp.getAttribute("name1")-->
+<!--        let r = signUp.getAttribute("roleInput")-->
+<!--        let p = signUp.getAttribute("exampleInputPassword1")-->
+<!--        console.log(pa + ","+r+","+p)-->
+
+<!--    try {-->
+<!--        let response = await fetch('./api/users/form', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/x-www-form-urlencoded',-->
+<!--                append(username, name ) {-->
+<!--                },-->
+<!--                append(role, r) {-->
+<!--                },-->
+<!--                append(password, p) {-->
+<!--                }-->
+<!--            },-->
+
+<!--            body: new URLSearchParams(form.parentElement)-->
+
+
+<!--        });-->
+<!--        let result = await response.headers;-->
+<!--        console.log(result);-->
+<!--    }-->
+<!--    catch (r) {-->
+<!--        console.log(r + "!error.!")-->
+<!--    }-->
+<!--}-->
+<!--</script>-->
+
+
 
 
 </body>
