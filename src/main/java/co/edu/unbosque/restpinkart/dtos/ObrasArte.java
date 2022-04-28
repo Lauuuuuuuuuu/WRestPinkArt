@@ -1,11 +1,15 @@
 package co.edu.unbosque.restpinkart.dtos;
 
+import com.opencsv.bean.CsvBindByName;
+
 import java.io.File;
 
 public class ObrasArte {
-
+    @CsvBindByName
     private String titulo;
+    @CsvBindByName
     private int precio;
+    @CsvBindByName
     private File imagen;
 
     public ObrasArte(String t, int p, File i){

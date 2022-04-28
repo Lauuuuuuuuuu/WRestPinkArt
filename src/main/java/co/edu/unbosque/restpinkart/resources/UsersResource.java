@@ -4,7 +4,7 @@ package co.edu.unbosque.restpinkart.resources;
 
 import co.edu.unbosque.restpinkart.dtos.ExceptionMessage;
 import co.edu.unbosque.restpinkart.dtos.Usuario;
-import co.edu.unbosque.restpinkart.services.Operaciones;
+import co.edu.unbosque.restpinkart.services.AgregarUsuario;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -26,7 +26,7 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response list() {
         try {
-            List<Usuario> usuarios = new Operaciones().getUsers();
+            List<Usuario> usuarios = new AgregarUsuario().getUsers();
 
             return Response.ok()
                     .entity(usuarios)
@@ -37,7 +37,6 @@ public class UsersResource {
         }
     }
     @POST
-    @Path("/form")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response createForm(
@@ -50,7 +49,7 @@ public class UsersResource {
         String contextPath =context.getRealPath("") + File.separator;
         System.out.println(username);
         try {
-            Usuario usuario = new Operaciones().crearUsuario(username, password, role, "0",contextPath);
+            Usuario usuario = new AgregarUsuario().crearUsuario(username, password, role, "0",contextPath);
 
             return Response.created(UriBuilder.fromResource(UsersResource.class).path(username).build())
                     .entity(usuario)
@@ -63,10 +62,11 @@ public class UsersResource {
     @GET
     @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("username") String username) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response get(@PathParam("username")  String username) {
         try {
             System.out.println(username);
-            List<Usuario> users = new Operaciones().getUsers();
+            List<Usuario> users = new AgregarUsuario().getUsers();
 
             Usuario usuario = users.stream()
                     .filter(u -> u.getUsername().equals(username))

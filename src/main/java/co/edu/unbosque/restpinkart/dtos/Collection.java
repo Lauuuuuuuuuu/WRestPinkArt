@@ -10,11 +10,16 @@ public class Collection {
     @CsvBindByName
     private String collection;
     @CsvBindByName
-    private String obra;
+    private ObrasArte obra;
+
+    public Collection(String colecction, ObrasArte obra){
+        this.obra=obra;
+        this.collection = colecction;
+    }
 
     public String getUsername() {return username;}
 
     public String getCollection() {return collection;}
 
-    public String getObra() {return obra;}
+
 }
