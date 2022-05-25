@@ -3,7 +3,6 @@ package co.edu.unbosque.restpinkart.resources;
 import co.edu.unbosque.restpinkart.dtos.Collection;
 import co.edu.unbosque.restpinkart.dtos.ObrasArte;
 import co.edu.unbosque.restpinkart.services.ServicioObras;
-import jakarta.ws.rs.core.MultivaluedMap;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import javax.servlet.ServletContext;

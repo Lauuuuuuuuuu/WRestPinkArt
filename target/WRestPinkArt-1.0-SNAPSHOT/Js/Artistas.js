@@ -1,19 +1,20 @@
 const form = document.querySelector("form")
-let direction = null;
 
 form.onsubmit = async (e)=> {
     e.preventDefault()
-    const formData =new FormData(form);
+
     let username = sessionStorage.getItem('username')
+    console.log(username)
+    const formData =new FormData(form);
+
     try {
-        let response = await fetch(`./api/users/${username}/collections`, {
+        let response = await fetch(`./api/users/${username}/arts`, {
             method: 'POST',
             headers: {
 
-                "Content-Type": "application/x-www-form-urlencoded",
             },
 
-            body: new URLSearchParams(formData),
+            body: formData,
 
 
         });
