@@ -1,39 +1,39 @@
- const form = document.querySelector("form")
- let direction = null;
+const form = document.querySelector("form")
+let direction = null;
 
 form.onsubmit = async (e)=> {
-   e.preventDefault()
-   const formData =new FormData(form);
+    e.preventDefault()
+    const formData =new FormData(form);
 
-   try {
-       let response = await fetch('./api/users', {
-           method: 'POST',
-           headers: {
+    try {
+        let response = await fetch('./api/users', {
+            method: 'POST',
+            headers: {
 
-               "Content-Type": "application/x-www-form-urlencoded",
-           },
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
 
-           body: new URLSearchParams(formData),
+            body: new URLSearchParams(formData),
 
 
-       });
-       let result = await response.json();
-       console.log(result);
-       window.sessionStorage.setItem('username',document.getElementById("name1").value)
-       window.sessionStorage.setItem('role',document.getElementById("roleInput").value);
-       direction=window.sessionStorage.getItem('role');
-       console.log(direction)
-       if (direction == "Artista"){
-           window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/artistas.html";
-       }
-       else if (direction=="Comprador"){
-           window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/prueba.html";
-       }
+        });
+        let result = await response.json();
+        console.log(result);
+        sessionStorage.setItem('username',document.getElementById("name1").value)
+        sessionStorage.setItem('role',document.getElementById("roleInput").value);
+        direction=window.sessionStorage.getItem('role');
+        console.log(direction)
+        if (direction == "Artista"){
+            window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/artistas.html";
+        }
+        else if (direction=="Comprador"){
+            window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/prueba.html";
+        }
 
-   }
-   catch (r) {
-       console.log(r + "!error.!")
-   }
+    }
+    catch (r) {
+        console.log(r + "!error.!")
+    }
 }
 
 

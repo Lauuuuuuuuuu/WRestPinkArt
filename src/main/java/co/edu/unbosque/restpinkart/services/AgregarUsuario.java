@@ -47,14 +47,14 @@ public class AgregarUsuario {
 //        os.close();
 //    }
 
-    public Usuario crearUsuario(String username, String password, String role, String coins, String path) throws IOException {
+    public Usuario crearUsuario(String username, String password, String role, int coins, String path, int id) throws IOException {
         String newLine = "\n" + username + "," + password + "," + role + "," + coins ;
 
         System.out.println(path + File.separator + "resources" + File.separator + "users.csv" + "Create");
         FileOutputStream os = new FileOutputStream(path + "WEB-INF/classes" + File.separator + "usuarios.csv",true);
         os.write(newLine.getBytes());
         os.close();
-   return new Usuario(username,password,role,coins);
+   return new Usuario(username,password,role,coins,id);
     }
 
 //    public void crearUsuario(String username, String password, String role, String path, boolean append) throws IOException {

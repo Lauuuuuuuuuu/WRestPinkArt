@@ -12,16 +12,18 @@ public class Usuario {
     @CsvBindByName
     private String role;
     @CsvBindByName
-    private String coins;
+    private int coins;
+    private int id;
 
     public Usuario (){
 
     }
-    public Usuario(String username, String password, String role, String coins) {
+    public Usuario(String username, String password, String role, int coins, int id) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.coins = coins;
+        this.id = id;
     }
 
     public String getUsername() {
@@ -48,13 +50,17 @@ public class Usuario {
         this.role = role;
     }
 
-    public String getCoins() {
+    public int getCoins() {
         return coins;
     }
 
-    public void setCoins(String coins) {
+    public void setCoins(int coins) {
         this.coins = coins;
     }
+
+    public int getId(){return id;}
+
+    public void setId(int id){this.id = id;}
 
     @Override
     public String toString() {
