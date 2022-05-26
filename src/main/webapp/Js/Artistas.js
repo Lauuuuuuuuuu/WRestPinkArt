@@ -8,7 +8,7 @@ form.onsubmit = async (e)=> {
     const formData =new FormData(form);
 
     try {
-        let response = await fetch(`./api/users/${username}/arts`, {
+        let response = await fetch(`./api/users/arts/${username}`, {
             method: 'POST',
             headers: {
 

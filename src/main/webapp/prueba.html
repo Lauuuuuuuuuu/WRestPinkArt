@@ -20,25 +20,59 @@
     </div>
 </header>
 <body>
-<center><div id="images" class="images-tables2" style="margin-top: 5%;">  </div></center>
+<div id = container></div>
 <script>
 
-    var imagesDiv = document.getElementById("images")
+    let container = document.getElementById("container");
 
-    fetch("AgregarObras")
+    fetch("api/users/obtenerobras")
         .then(response => response.json())
-        .then(images => {
-            images.map(image=>{
-                let imgElem = document.createElement("img");
-                imgElem.src= "./"+image;
-                imgElem.width = 500;
+        .then(jsondata =>{
+           jsondata.map(register=>{
 
-                imagesDiv.appendChild(imgElem);
+               let obra = document.createElement("div");
+               let image = document.createElement("img");
+               image.src = register["file"];
+               image.width = 200;
 
-            })
+               let title = document.createElement("p");
+               title.innerHTML = "Titulo: "+register["title"];
 
+               let creator =document.createElement("p");
+               creator.innerHTML = "Creador: "+register["author"];
 
+               let price = document.createElement("p");
+               price.innerHTML = "Precio: "+register["price"]+" Fcoins";
+
+               let collection = document.createElement("p");
+               collection.innerHTML = "Colección: "+register["collection"];
+
+               obra.appendChild(image);
+               obra.appendChild(title);
+               obra.appendChild(creator);
+               obra.appendChild(price);
+               obra.appendChild(collection)
+               container.appendChild(obra);
+           })
         })
+
+
+    // var imagesDiv = document.getElementById("images")
+    //
+    // fetch("AgregarObras")
+    //     .then(response => response.json())
+    //     .then(images => {
+    //         images.map(image=>{
+    //             let imgElem = document.createElement("img");
+    //             imgElem.src= "./"+image;
+    //             imgElem.width = 500;
+    //
+    //             imagesDiv.appendChild(imgElem);
+    //
+    //         })
+    //
+    //
+    //     })
 
 
 </script>

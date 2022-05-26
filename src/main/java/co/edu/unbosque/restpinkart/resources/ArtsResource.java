@@ -13,24 +13,25 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.ws.rs.core.MultivaluedMap;
 import java.sql.*;
 
 
 
-@Path("/users/{username}/arts")
+@Path("/users/arts")
 
 public class ArtsResource {
     @Context
     ServletContext context;
     Connection conn = null;
+
     PreparedStatement prestmt = null;
     Statement stmt = null;
     static final String JDBC_DRIVER = "org.postgresql.Driver";
     static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
     Obras obra = null;
+    List<Obras> listaObras;
 
     // Database credentials
     static final String USER = "postgres";
@@ -38,8 +39,126 @@ public class ArtsResource {
 
     private final String UPLOAD_DIRECTORY= File.separator;
 
+    public ArtsResource(){
+        listaObras = new List<Obras>() {
+            @Override
+            public int size() {
+                return 0;
+            }
 
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @Override
+            public Iterator<Obras> iterator() {
+                return null;
+            }
+
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T[] toArray(T[] a) {
+                return null;
+            }
+
+            @Override
+            public boolean add(Obras obras) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(Collection<?> c) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends Obras> c) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(int index, Collection<? extends Obras> c) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(Collection<?> c) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(Collection<?> c) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public Obras get(int index) {
+                return null;
+            }
+
+            @Override
+            public Obras set(int index, Obras element) {
+                return null;
+            }
+
+            @Override
+            public void add(int index, Obras element) {
+
+            }
+
+            @Override
+            public Obras remove(int index) {
+                return null;
+            }
+
+            @Override
+            public int indexOf(Object o) {
+                return 0;
+            }
+
+            @Override
+            public int lastIndexOf(Object o) {
+                return 0;
+            }
+
+            @Override
+            public ListIterator<Obras> listIterator() {
+                return null;
+            }
+
+            @Override
+            public ListIterator<Obras> listIterator(int index) {
+                return null;
+            }
+
+            @Override
+            public List<Obras> subList(int fromIndex, int toIndex) {
+                return null;
+            }
+        };
+    }
     @POST
+    @Path("/{username}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadFile(MultipartFormDataInput input,
@@ -234,4 +353,73 @@ public class ArtsResource {
         }
         return response;
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Obras> getArtsImage(){
+        System.out.println("entro a obtener obras");
+        String autor = "";
+        Response response = null;
+       try{
+           Class.forName(JDBC_DRIVER);
+           System.out.println("intento conectarme a la base de datos");
+           conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+           System.out.println("=> consulting arts...");
+           stmt = conn.createStatement();
+           String sql = "SELECT * FROM arts_table";
+           ResultSet rs = stmt.executeQuery(sql);
+           while (rs.next()) {
+               // Extracting row values by column name
+               String art_name = rs.getString("art_name");
+               int price = rs.getInt("price");
+               String file = rs.getString("file");
+               String collection_name = rs.getString("collection_name");
+               int id = rs.getInt("id_user");
+
+               String sql2 = "SELECT * FROM user_arts u WHERE u.id_user =?";
+
+               prestmt = conn.prepareStatement(sql2);
+               prestmt.setInt(1,id);
+               ResultSet rs2 = prestmt.executeQuery();
+               while(rs2.next()){
+                   autor = rs2.getString("name");
+               }
+               System.out.println("lei autor");
+               // Creating a new UserApp class instance and adding it to the array list
+               prestmt.close();
+               rs2.close();
+                Obras agregarObra = new Obras(collection_name,art_name,autor,price,0,file);
+               listaObras.add(agregarObra);
+               System.out.println(agregarObra.getTitle());
+           }
+           rs.close();
+           stmt.close();
+           conn.close();
+           if (listaObras != null){
+               response = Response.ok().entity(listaObras).build();
+           }
+           response = Response.status(404)
+                   .entity(new ExceptionMessage(404, "User not found"))
+                   .build();
+       } catch (SQLException e) {
+           e.printStackTrace();
+           response = Response.serverError().build();
+
+       } catch (ClassNotFoundException e) {
+           e.printStackTrace();
+           response = Response.serverError().build();
+       }
+       finally {
+           try {
+               if (prestmt != null) prestmt.close();
+               if (conn != null) conn.close();
+               if(stmt!=null) stmt.close();
+           } catch (SQLException se) {
+               se.printStackTrace();
+           }
+       }
+       return listaObras;
+    }
+
 }
