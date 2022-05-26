@@ -16,6 +16,8 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MultivaluedMap;
+import java.sql.*;
+
 
 
 @Path("/users/{username}/arts")
@@ -23,6 +25,16 @@ import javax.ws.rs.core.MultivaluedMap;
 public class ArtsResource {
     @Context
     ServletContext context;
+    Connection conn = null;
+    PreparedStatement prestmt = null;
+    Statement stmt = null;
+    static final String JDBC_DRIVER = "org.postgresql.Driver";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+    Obras obra = null;
+
+    // Database credentials
+    static final String USER = "postgres";
+    static final String PASS = "20031812";
 
     private final String UPLOAD_DIRECTORY= File.separator;
 
@@ -35,16 +47,16 @@ public class ArtsResource {
     ) {
 
         String fileName = "";
-        Obras obra = null;
         Response response = null;
         System.out.println("entro");
+        String rutaFinal="";
         try{
 
             Map<String, List<InputPart>> formParts = input.getFormDataMap();
             String title = formParts.get("title").get(0).getBodyAsString();
-            String price = formParts.get("price").get(0).getBodyAsString();
-            String currentCollection = formParts.get("coleccion").get(0).getBodyAsString();
-            List<InputPart> inputParts = formParts.get("image");
+            String price = formParts.get("precio").get(0).getBodyAsString();
+            String currentCollection = formParts.get("collection").get(0).getBodyAsString();
+            List<InputPart> inputParts = formParts.get("imagen");
 
             String theAlphaNumericS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"+"0123456789"+"abcdefghijklmnopqrstuvwxyz";
             StringBuilder builder;
@@ -72,17 +84,20 @@ public class ArtsResource {
                 newFileName += "." + format;
             }
 
-            obra = new Obras(currentCollection,title,username,price,0) ;
             for (InputPart inputPart : inputParts){
                 InputStream inputStream = inputPart.getBody(InputStream.class,null);
 
                 saveFile(inputStream,newFileName,currentCollection,context);
             }
+            System.out.println(rutaFinal);
+            obra = new Obras(currentCollection,title,username,Integer.parseInt(price),0,currentCollection+File.separator+newFileName) ;
+            System.out.println(obra.getTitle());
 
             if (obra != null){
-                response = Response.ok().entity(obra).build();
+                response = agregarABase();
 
             }
+
 
 
         }catch (IOException e) {
@@ -91,6 +106,7 @@ public class ArtsResource {
                     .entity(new ExceptionMessage(404, "Error creando obra"))
                     .build();
         }
+
         System.out.println(response.getStatus());
         return response;
     }
@@ -109,13 +125,13 @@ public class ArtsResource {
         return "unknown";
     }
 
-    private void saveFile(InputStream uploadedInputStream, String fileName, String currentCollection, ServletContext context) {
+    private String saveFile(InputStream uploadedInputStream, String fileName, String currentCollection, ServletContext context) {
         int read = 0;
         byte[] bytes = new byte[1024];
-
+        String uploadPath = "";
         try {
             // Complementing servlet path with the relative path on the server
-            String uploadPath = context.getRealPath("") + UPLOAD_DIRECTORY+currentCollection;
+            uploadPath = context.getRealPath("") + UPLOAD_DIRECTORY+currentCollection;
 
             // Creating the upload folder, if not exist
             File uploadDir = new File(uploadPath);
@@ -133,5 +149,89 @@ public class ArtsResource {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return uploadPath;
+    }
+    public Response agregarABase(){
+        Response response = null;
+        int id_encontrado = -1;
+        PreparedStatement prestmt2=null;
+        PreparedStatement prestmt3=null;
+
+
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("intento conectarme a la base de datos");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("=> consulting user...");
+
+            String sql = "SELECT * FROM user_arts u WHERE u.name = ?";
+            prestmt = conn.prepareStatement(sql);
+            prestmt.setString(1,obra.getAuthor());
+            ResultSet rs = prestmt.executeQuery();
+
+            while (rs.next()) {
+                id_encontrado = rs.getInt("id_user");
+            }
+            if (id_encontrado != -1){
+                String sql2="INSERT INTO collection_table (collection_name,id_user ) VALUES(?,?)";
+                prestmt2 = conn.prepareStatement(sql2);
+                prestmt2.setString(1,obra.getCollection());
+                prestmt2.setInt(2,id_encontrado);
+                prestmt2.executeUpdate();
+                prestmt2.close();
+            }
+            else {
+                response = Response.status(404)
+                        .entity(new ExceptionMessage(404, "User not found"))
+                        .build();
+            }
+            rs.close();
+            prestmt.close();
+            //creating art
+            String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,id_user)" +
+                    "VALUES (?,?,?,?,?)";
+            prestmt3 = conn.prepareStatement(sql3);
+            prestmt3.setString(1, obra.getTitle());
+            prestmt3.setInt(2,obra.getPrice());
+            prestmt3.setString(3, obra.getFile());
+            prestmt3.setString(4,obra.getCollection());
+            prestmt3.setInt(5,id_encontrado);
+            prestmt3.executeUpdate();
+            prestmt3.close();
+            conn.close();
+            response = Response.ok().entity(obra).build();
+        }catch (SQLException se) {
+            se.printStackTrace();
+            try {
+                String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,id_user)" +
+                        "VALUES (?,?,?,?,?)";
+                prestmt3 = conn.prepareStatement(sql3);
+                prestmt3.setString(1, obra.getTitle());
+                prestmt3.setInt(2,obra.getPrice());
+                prestmt3.setString(3, obra.getFile());
+                prestmt3.setString(4,obra.getCollection());
+                prestmt3.setInt(5,id_encontrado);
+                prestmt3.executeUpdate();
+                prestmt3.close();
+                conn.close();
+                response = Response.ok().entity(obra).build();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response = Response.serverError().build();
+            }
+
+        } catch (ClassNotFoundException cn) {
+            cn.printStackTrace();
+            response = Response.serverError().build();
+
+        }finally {
+            try {
+                if (prestmt != null) prestmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return response;
     }
 }

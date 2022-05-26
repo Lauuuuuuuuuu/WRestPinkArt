@@ -1,0 +1,29 @@
+CREATE TABLE user_arts(
+    name VARCHAR (10) NOT NULL,
+    password VARCHAR(10) NOT NULL,
+    role VARCHAR (10) NOT NULL,
+    id_user SERIAL ,
+    fcoins INT NOT NULL,
+    PRIMARY KEY (id_user)
+);
+
+CREATE TABLE collection_table(
+    collection_name VARCHAR (20) NOT NULL,
+    name VARCHAR (20) NOT NULL,
+    PRIMARY KEY (collection_name),
+    FOREIGN KEY (id)
+        REFERENCES user_arts (name)
+);
+
+
+CREATE TABLE arts_table(
+    art_name VARCHAR (10) NOT NULL,
+    price INT NOT NULL,
+    file VARCHAR (70) NOT NULL,
+    collection_name VARCHAR (20),
+	id_user INT NOT NULL,
+    PRIMARY KEY (art_name),
+    FOREIGN KEY (collection_name)
+        REFERENCES collection_table (collection_name)
+
+);

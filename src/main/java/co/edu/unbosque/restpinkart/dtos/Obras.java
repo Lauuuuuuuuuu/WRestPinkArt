@@ -4,12 +4,13 @@ import com.opencsv.bean.CsvBindByName;
 
 public class Obras {
 
-    public Obras(String collection, String title, String author, String price, int likes) {
+    public Obras(String collection, String title, String author, int price, int likes, String file) {
         this.collection = collection;
         this.title = title;
         this.author = author;
         this.price = price;
         this.likes = likes;
+        this.file = file;
     }
 
     @CsvBindByName
@@ -19,9 +20,10 @@ public class Obras {
     @CsvBindByName
     private String author;
     @CsvBindByName
-    private String price;
+    private int price;
     @CsvBindByName
     private int likes;
+    private String file;
 
     //Obtiene el valor correspondiente a la variable collection
     public String getCollection() {return collection;}
@@ -42,10 +44,10 @@ public class Obras {
     public void setAuthor(String author) {this.author = author;}
 
     //Obtiene el valor correspondiente a la variable price
-    public String getPrice() {return price;}
+    public int getPrice() {return price;}
 
     //Asigna un valor a la variable price
-    public void setPrice(String price) {this.price = price;}
+    public void setPrice(int price) {this.price = price;}
 
     //Obtiene el valor correspondiente a la variable likes
     public int getLikes() {
@@ -57,4 +59,11 @@ public class Obras {
         this.likes = likes;
     }
 
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
+    }
 }
