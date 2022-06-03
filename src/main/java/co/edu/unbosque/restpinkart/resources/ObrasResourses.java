@@ -45,7 +45,7 @@ public class ObrasResourses {
         for (InputPart inputPart : inputParts) {
             try {
                 // Retrieving headers and reading the Content-Disposition header to file name
-                MultivaluedMap<String, String> headers = inputPart.getHeaders();
+                MultivaluedMap<String, String> headers = (MultivaluedMap<String, String>) inputPart.getHeaders();
 
                 String fileName = parseFileName(headers);
 

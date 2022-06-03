@@ -14,7 +14,8 @@ import java.io.IOException;
 import java.util.List;
 
 @Path("/users/{username}/collections")
-public class CollectionsResource {
+public class
+CollectionsResource {
 
     @Context
     ServletContext context;
