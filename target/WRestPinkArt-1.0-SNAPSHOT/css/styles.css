@@ -86,6 +86,19 @@ body {
 
 }
 
+.container-arts{
+  max-width:200px;
+  background-color: #e7e0e0bd;
+  border-radius: 5px;
+  border-style: groove;
+  margin-top: 100px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 100px;
+  min-width: 400px;
+  min-height: 300px;
+}
+
 .input{
   margin: 5%;
   border-style: groove;

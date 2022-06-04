@@ -16,14 +16,15 @@ CREATE TABLE collection_table(
 );
 
 
-CREATE TABLE arts_table(
-    art_name VARCHAR (10) NOT NULL,
-    price INT NOT NULL,
-    file VARCHAR (70) NOT NULL,
-    collection_name VARCHAR (20),
-	id_user INT NOT NULL,
-    PRIMARY KEY (art_name),
-    FOREIGN KEY (collection_name)
-        REFERENCES collection_table (collection_name)
+   CREATE TABLE arts_table(
+           art_name VARCHAR (40) NOT NULL,
+           price INT NOT NULL,
+           file VARCHAR (70) NOT NULL,
+           collection_name VARCHAR (20),
+   	 	   likes INT,
+           id_user INT NOT NULL,
+           PRIMARY KEY (art_name),
+           FOREIGN KEY (collection_name)
+               REFERENCES collection_table (collection_name)
 
-);
+       );

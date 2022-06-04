@@ -20,7 +20,7 @@
     </div>
 </header>
 <body>
-<div id = container></div>
+<div id = container class="container-arts"></div>
 <script>
 
     let container = document.getElementById("container");
@@ -35,6 +35,7 @@
                image.src = register["file"];
                image.width = 200;
 
+
                let title = document.createElement("p");
                title.innerHTML = "Titulo: "+register["title"];
 
@@ -47,32 +48,19 @@
                let collection = document.createElement("p");
                collection.innerHTML = "Colección: "+register["collection"];
 
+               let likes = document.createElement("p")
+               likes.innerHTML = "Likes: "+register["likes"]
+
                obra.appendChild(image);
                obra.appendChild(title);
                obra.appendChild(creator);
                obra.appendChild(price);
-               obra.appendChild(collection)
+               obra.appendChild(collection);
+               obra.appendChild(likes);
                container.appendChild(obra);
            })
         })
 
-
-    // var imagesDiv = document.getElementById("images")
-    //
-    // fetch("AgregarObras")
-    //     .then(response => response.json())
-    //     .then(images => {
-    //         images.map(image=>{
-    //             let imgElem = document.createElement("img");
-    //             imgElem.src= "./"+image;
-    //             imgElem.width = 500;
-    //
-    //             imagesDiv.appendChild(imgElem);
-    //
-    //         })
-    //
-    //
-    //     })
 
 
 </script>

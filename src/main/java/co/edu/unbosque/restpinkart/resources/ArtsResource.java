@@ -322,14 +322,15 @@ public class ArtsResource {
         }catch (SQLException se) {
             se.printStackTrace();
             try {
-                String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,id_user)" +
-                        "VALUES (?,?,?,?,?)";
+                String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,likes,id_user)" +
+                        "VALUES (?,?,?,?,?,?)";
                 prestmt3 = conn.prepareStatement(sql3);
                 prestmt3.setString(1, obra.getTitle());
                 prestmt3.setInt(2,obra.getPrice());
                 prestmt3.setString(3, obra.getFile());
                 prestmt3.setString(4,obra.getCollection());
-                prestmt3.setInt(5,id_encontrado);
+                prestmt3.setInt(5,0);
+                prestmt3.setInt(6,id_encontrado);
                 prestmt3.executeUpdate();
                 prestmt3.close();
                 conn.close();

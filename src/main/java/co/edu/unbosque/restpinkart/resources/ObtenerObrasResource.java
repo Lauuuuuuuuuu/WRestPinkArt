@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/users/obtenerobras")
@@ -26,13 +27,12 @@ public class ObtenerObrasResource {
     // Database credentials
     static final String USER = "postgres";
     static final String PASS = "20031812";
-    List<Obras> listaObras = null;
+    List<Obras> listaObras = new ArrayList<>();
 
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getArts(){
-        listaObras = arts.getArtsImage();
 
         System.out.println("entro a obtener obras");
         String autor = "";
@@ -53,6 +53,7 @@ public class ObtenerObrasResource {
                 String file = rs.getString("file");
                 String collection_name = rs.getString("collection_name");
                 int id = rs.getInt("id_user");
+                int likes = rs.getInt("likes");
 
                 String sql2 = "SELECT * FROM user_arts u WHERE u.id_user =?";
 
@@ -65,7 +66,7 @@ public class ObtenerObrasResource {
                 // Creating a new UserApp class instance and adding it to the array list
                 prestmt.close();
                 rs2.close();
-                Obras agregarObra = new Obras(collection_name,art_name,autor,price,0,file);
+                Obras agregarObra = new Obras(collection_name,art_name,autor,price,likes,file);
                 listaObras.add(agregarObra);
             }
             rs.close();
@@ -74,9 +75,11 @@ public class ObtenerObrasResource {
             if (listaObras != null){
                 response = Response.ok().entity(listaObras).build();
             }
-            response = Response.status(404)
-                    .entity(new ExceptionMessage(404, "User not found"))
-                    .build();
+            else {
+                response = Response.status(404)
+                        .entity(new ExceptionMessage(404, "User not found"))
+                        .build();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             response = Response.serverError().build();
@@ -94,6 +97,7 @@ public class ObtenerObrasResource {
                 se.printStackTrace();
             }
         }
+        System.out.println(response.toString());
         return response;
     }
 
