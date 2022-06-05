@@ -20,7 +20,7 @@
     </div>
 </header>
 <body>
-<div id = container class="container-arts"></div>
+<div id = container class=""></div>
 <script>
 
     let container = document.getElementById("container");
@@ -31,25 +31,37 @@
            jsondata.map(register=>{
 
                let obra = document.createElement("div");
+               obra.style = "max-width:400px;background-color: #e7e0e0bd;border-radius: 5px;border-style: groove;"
+               +" margin-top: 100px;margin-right: auto; margin-left: auto;margin-bottom: 100px;min-width: 800px;"
+                   + "min-height: 500px";
                let image = document.createElement("img");
                image.src = register["file"];
-               image.width = 200;
+               image.width = 400;
+
+               image.style = "border-radius: 5px;border-style: groove; margin-left: 200px;margin-top: 30px;margin-bottom: 30px;  border-color: #d8b1b1";
+
 
 
                let title = document.createElement("p");
-               title.innerHTML = "Titulo: "+register["title"];
+               title.innerHTML = "Titulo: "+register["title"]
+               title.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  font-size: 20px;"
 
                let creator =document.createElement("p");
                creator.innerHTML = "Creador: "+register["author"];
+               creator.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  font-size: 20px;"
 
                let price = document.createElement("p");
                price.innerHTML = "Precio: "+register["price"]+" Fcoins";
+               price.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  font-size: 20px;"
 
                let collection = document.createElement("p");
                collection.innerHTML = "Colección: "+register["collection"];
+               collection.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  font-size: 20px;"
 
                let likes = document.createElement("p")
                likes.innerHTML = "Likes: "+register["likes"]
+               likes.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  font-size: 20px;"
+
 
                obra.appendChild(image);
                obra.appendChild(title);
