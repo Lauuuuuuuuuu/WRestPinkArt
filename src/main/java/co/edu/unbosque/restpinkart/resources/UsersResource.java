@@ -23,11 +23,11 @@ public class UsersResource {
     Usuario user_consulted = null;
 
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "Hola.123";
 
 
     @GET
@@ -51,7 +51,8 @@ public class UsersResource {
 
             @FormParam("username") String usernameparam,
             @FormParam("password") String passwordparam,
-            @FormParam("role") String roleparam
+            @FormParam("role") String rolparam,
+            @FormParam("email") String emailparam
 
     ) {
         Response response;
@@ -61,17 +62,17 @@ public class UsersResource {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             System.out.println("=> creating user...");
 
-            String sql = "INSERT INTO user_arts(name,password,role,fcoins) VALUES (?,?,?,?)";
+            String sql = "INSERT INTO user_arts(name,email,rol,password) VALUES (?,?,?,?)";
             prestmt = conn.prepareStatement(sql);
             prestmt.setString(1,usernameparam);
-            prestmt.setString(2,passwordparam);
-            prestmt.setString(3,roleparam);
-            prestmt.setInt(4,0);
+            prestmt.setString(2,emailparam);
+            prestmt.setString(3,rolparam);
+            prestmt.setString(4,passwordparam);
             prestmt.executeUpdate();
             prestmt.close();
             conn.close();
 
-            Usuario UserCreated = new Usuario(usernameparam,passwordparam,roleparam,0,0);
+            Usuario UserCreated = new Usuario(usernameparam,passwordparam,rolparam, emailparam);
 
             if (UserCreated != null) {
                 response= Response.ok()
@@ -102,11 +103,6 @@ public class UsersResource {
         return response;
     }
 
-
-
-
-
-
     @GET
     @Path("/{username}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -115,9 +111,8 @@ public class UsersResource {
         Response response = null;
         String namers ;
         String passwordrs ;
-        String rolers ;
-        int fcoinsrs ;
-        int idrs =0;
+        String rolrs ;
+        String emailrs;
         try {
 
             Class.forName(JDBC_DRIVER);
@@ -133,10 +128,10 @@ public class UsersResource {
             while (rs.next()) {
                 namers =rs.getString("name");
                 passwordrs = rs.getString("password");
-                rolers = rs.getString("role");
-                fcoinsrs = rs.getInt("fcoins");
-                idrs =  rs.getInt("id_user") ;
-                Usuario temp = new Usuario(namers,passwordrs,rolers,fcoinsrs,idrs);
+                rolrs = rs.getString("rol");
+                emailrs = rs.getString("email");
+
+                Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs);
                 user_consulted= temp;
                 System.out.println(temp);
 
@@ -160,6 +155,7 @@ public class UsersResource {
             response = Response.serverError().build();
         }
         catch (SQLException sq){
+            sq.printStackTrace();
             response = Response.serverError().build();
         }
         finally {
@@ -181,7 +177,7 @@ public class UsersResource {
     public Response actualizarfcoins(@FormParam("username") String usernameform,
                                      @FormParam("password") String passwordform,
                                      @FormParam("fcoins") int fcoinsform){
-        int id_encontrado = -1;
+        String id_encontrado = "";
         PreparedStatement prestmt2=null;
         Response response = null;
         int fcoinsiniciales = 0;
@@ -193,34 +189,32 @@ public class UsersResource {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
             System.out.println("=> consulting user..."+usernameform);
-            String sql = "SELECT * FROM user_arts u WHERE u.name = ? AND u.password = ?";
-            prestmt = conn.prepareStatement(sql);
-            prestmt.setString(1,usernameform);
-            prestmt.setString(2,passwordform);
-            ResultSet rs = prestmt.executeQuery();
+            String sql = "SELECT * FROM user_arts u WHERE u.email ='"+ usernameform + "' AND u.password='"+passwordform+"'";
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                id_encontrado=rs.getInt("id_user");
-                fcoinsiniciales = rs.getInt("fcoins") + fcoinsform;
+                id_encontrado=rs.getString("name");
+//                fcoinsiniciales = rs.getInt("fcoins") + fcoinsform;
                 System.out.println(id_encontrado);
-                System.out.println(fcoinsiniciales);
+//                System.out.println(fcoinsiniciales);
 
 
             }
 
 
-            if (id_encontrado != -1) {
-                String sql2="UPDATE user_arts SET fcoins = ? WHERE id_user = ?";
+            if (!id_encontrado.isEmpty()) {
+                String sql2="INSERT INTO Wallet_table (email,password,total) VALUES (?,?,?)";
                 prestmt2 = conn.prepareStatement(sql2);
-                prestmt2.setInt(1,fcoinsiniciales);
-                prestmt2.setInt(2,id_encontrado);
+                prestmt2.setString(1,usernameform);
+                prestmt2.setInt(2, Integer.parseInt(passwordform));
+                prestmt2.setInt(3,fcoinsform);
                 prestmt2.executeUpdate();
 
                 prestmt2.close();
-                Usuario ufcoins = new Usuario(usernameform, passwordform, "",fcoinsiniciales, id_encontrado);
+//                Usuario ufcoins = new Usuario(usernameform, passwordform, "",fcoinsiniciales, id_encontrado);
 
                 response= Response.ok()
-                        .entity(ufcoins)
                         .build();
             } else {
                 response = Response.status(404)
@@ -228,18 +222,20 @@ public class UsersResource {
                         .build();
             }
             rs.close();
-            prestmt.close();
+            stmt.close();
             conn.close();
 
         } catch(ClassNotFoundException cn) {
+            cn.printStackTrace();
             response = Response.serverError().build();
         }
         catch (SQLException sq){
+            sq.printStackTrace();
             response = Response.serverError().build();
         }
         finally {
             try {
-                if (prestmt != null) prestmt.close();
+                if (stmt != null) stmt.close();
                 if (conn != null) conn.close();
                 if(prestmt2!=null) prestmt2.close();
             } catch (SQLException se) {

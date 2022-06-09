@@ -43,15 +43,15 @@ public class Operaciones {
     }
 
 
-    public Usuario crearUsuario(String username, String password, String role, int coins, String path, int id) throws IOException {
-        String newLine = username + "," + password + "," + role + "," + coins + "\n";
-
-        System.out.println(path + File.separator + "resources" + File.separator + "users.csv" + "Create");
-        FileOutputStream os = new FileOutputStream(path + "WEB-INF/classes" + File.separator + "usuarios.csv",true);
-        os.write(newLine.getBytes());
-        os.close();
-   return new Usuario(username,password,role,coins,id);
-    }
+//    public Usuario crearUsuario(String username, String password, String role, int coins, String path, int id) throws IOException {
+//        String newLine = username + "," + password + "," + role + "," + coins + "\n";
+//
+//        System.out.println(path + File.separator + "resources" + File.separator + "users.csv" + "Create");
+//        FileOutputStream os = new FileOutputStream(path + "WEB-INF/classes" + File.separator + "usuarios.csv",true);
+//        os.write(newLine.getBytes());
+//        os.close();
+////   return new Usuario(username,password,role,coins,id);
+////    }
 
     public List<Collection> getUltimasColecciones() throws IOException {
 
