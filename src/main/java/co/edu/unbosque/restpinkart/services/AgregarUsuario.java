@@ -1,12 +1,18 @@
 package co.edu.unbosque.restpinkart.services;
+import co.edu.unbosque.restpinkart.dtos.ExceptionMessage;
 import co.edu.unbosque.restpinkart.dtos.Usuario;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
+import javax.ws.rs.core.Response;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import static co.edu.unbosque.restpinkart.services.Wallet.*;
 
 
 public class AgregarUsuario {
@@ -15,26 +21,57 @@ public class AgregarUsuario {
 
     public List<Usuario> getUsers() throws IOException {
 
-        List<Usuario> usuarios;
+        List<Usuario> usuarios = new ArrayList<Usuario>() ;
 
-        try (InputStream is = AgregarUsuario.class.getClassLoader()
-                .getResourceAsStream("Usuarios.csv")) {
+        Connection conn = null;
+        Statement stmt = null;
 
-            HeaderColumnNameMappingStrategy<Usuario> strategy = new HeaderColumnNameMappingStrategy<>();
-            strategy.setType(Usuario.class);
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        String namers ;
+        String passwordrs ;
+        String rolrs ;
+        String emailrs;
+        try {
 
-                CsvToBean<Usuario> csvToBean = new CsvToBeanBuilder<Usuario>(br)
-                        .withType(Usuario.class)
-                        .withMappingStrategy(strategy)
-                        .withIgnoreLeadingWhiteSpace(true)
-                        .build();
+            Class.forName(JDBC_DRIVER);
+            System.out.println("intento conectarme a la base de datos");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-                usuarios = csvToBean.parse();
+
+            String sql = "SELECT * FROM user_arts ";
+            stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                namers =rs.getString("name");
+                passwordrs = rs.getString("password");
+                rolrs = rs.getString("rol");
+                emailrs = rs.getString("email");
+
+                Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs);
+                usuarios.add(temp);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+
+        } catch(ClassNotFoundException cn) {
+            cn.printStackTrace();
+        }
+        catch (SQLException sq){
+            sq.printStackTrace();
+        }
+        finally {
+
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
             }
         }
-
         return usuarios;
     }
 
@@ -47,15 +84,17 @@ public class AgregarUsuario {
 //        os.close();
 //    }
 
-    public Usuario crearUsuario(String username, String password, String role, int coins, String path, String email) throws IOException {
-        String newLine = "\n" + username + "," + password + "," + role + "," + coins ;
 
-        System.out.println(path + File.separator + "resources" + File.separator + "users.csv" + "Create");
-        FileOutputStream os = new FileOutputStream(path + "WEB-INF/classes" + File.separator + "usuarios.csv",true);
-        os.write(newLine.getBytes());
-        os.close();
-   return new Usuario(email,username,password,role,coins);
-    }
+//    public Usuario crearUsuario(String username, String password, String role, int coins, String path, int id) throws IOException {
+//        String newLine = "\n" + username + "," + password + "," + role + "," + coins ;
+//
+//        System.out.println(path + File.separator + "resources" + File.separator + "users.csv" + "Create");
+//        FileOutputStream os = new FileOutputStream(path + "WEB-INF/classes" + File.separator + "usuarios.csv",true);
+//        os.write(newLine.getBytes());
+//        os.close();
+////   return new Usuario(username,password,rol,email);
+//    }
+
 
 //    public void crearUsuario(String username, String password, String role, String path, boolean append) throws IOException {
 //        String newLine = "\n"+username + "," + password + "," + role + "," + "0" + "\n";

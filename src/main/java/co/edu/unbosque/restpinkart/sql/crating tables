@@ -1,31 +1,31 @@
-CREATE TABLE user_arts(
+CREATE TABLE UserApp(
     name VARCHAR (10) NOT NULL,
     password VARCHAR(10) NOT NULL,
     role VARCHAR (10) NOT NULL,
-    id_user SERIAL ,
-    fcoins INT NOT NULL,
-    PRIMARY KEY (id_user)
+    email VARCHAR (30) NOT NULL,
+    PRIMARY KEY (email)
 );
 
-CREATE TABLE collection_table(
-    collection_name VARCHAR (20) NOT NULL,
+   CREATE TABLE Collection(
     name VARCHAR (20) NOT NULL,
-	id_user INT NOT NULL,
-    PRIMARY KEY (collection_name),
-    FOREIGN KEY (id_user)
-        REFERENCES user_arts (id_user)
+
+    description VARCHAR (20) NOT NULL,
+    category VARCHAR (20) NOT NULL,
+    id_collection SERIAL (20)
+    userApp VARCHAR(20) NOT NULL,
+    PRIMARY KEY (Id_collection)
+    FOREIGN KEY (userApp)
+        REFERENCES UserApp(name)
+
 );
 
-
-   CREATE TABLE arts_table(
-           art_name VARCHAR (40) NOT NULL,
-           price INT NOT NULL,
-           file VARCHAR (70) NOT NULL,
-           collection_name VARCHAR (20),
-   	 	   likes INT,
-           id_user INT NOT NULL,
-           PRIMARY KEY (art_name),
-           FOREIGN KEY (collection_name)
-               REFERENCES collection_table (collection_name)
-
+   CREATE TABLE Art(
+       name VARCHAR (40) NOT NULL,
+       price FLOAT NOT NULL,
+       imagePath VARCHAR (40) NOT NULL,
+       id_art SERIAL (20)
+       collection INT (20)
+       PRIMARY KEY (id_art)
+       FOREIGN KEY (Id_collection)
+               REFERENCES Collection (id_collection)
        );

@@ -29,13 +29,13 @@ public class ArtsResource {
     PreparedStatement prestmt = null;
     Statement stmt = null;
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
     Obras obra = null;
     List<Obras> listaObras;
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "Hola.123";
 
     private final String UPLOAD_DIRECTORY= File.separator;
 
@@ -285,10 +285,11 @@ public class ArtsResource {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             System.out.println("=> consulting user..."+obra.getAuthor());
 
-            String sql = "SELECT * FROM user_arts u WHERE u.email = ?";
-            prestmt = conn.prepareStatement(sql);
-            prestmt.setString(1,obra.getAuthor());
-            ResultSet rs = prestmt.executeQuery();
+
+            String sql = "SELECT * FROM user_arts u WHERE u.name = '" + obra.getAuthor() + "'";
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
 
             while (rs.next()) {
                 email_encontrado = rs.getString("email");
