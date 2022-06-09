@@ -84,6 +84,7 @@ public class AgregarUsuario {
 //        os.close();
 //    }
 
+
 //    public Usuario crearUsuario(String username, String password, String role, int coins, String path, int id) throws IOException {
 //        String newLine = "\n" + username + "," + password + "," + role + "," + coins ;
 //
@@ -93,6 +94,7 @@ public class AgregarUsuario {
 //        os.close();
 ////   return new Usuario(username,password,rol,email);
 //    }
+
 
 //    public void crearUsuario(String username, String password, String role, String path, boolean append) throws IOException {
 //        String newLine = "\n"+username + "," + password + "," + role + "," + "0" + "\n";

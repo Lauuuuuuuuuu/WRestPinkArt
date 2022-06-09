@@ -4,10 +4,10 @@ let direction = null;
 form.onsubmit = async (e)=> {
     e.preventDefault()
     const formData = new FormData(form);
-    let user = document.getElementById("text-1649446318027").value;
+    let email = document.getElementById("text-1649446318027").value;
 
     try {
-        let response = await fetch(`./api/users/${user}`, {
+        let response = await fetch(`./api/users/${email}`, {
             method: 'PUT',
             headers: {
 
@@ -19,7 +19,8 @@ form.onsubmit = async (e)=> {
         });
         let result = await  response.json();
         console.log(result);
-        if (result.username == user){
+        console.log(email);
+        if (result.email = email){
             alert("Your fcoins have been updated successfully, now you have "+result.coins+" fcoins.")
         }
         else{

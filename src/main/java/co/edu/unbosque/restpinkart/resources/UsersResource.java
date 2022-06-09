@@ -51,7 +51,9 @@ public class UsersResource {
 
             @FormParam("username") String usernameparam,
             @FormParam("password") String passwordparam,
+
             @FormParam("role") String rolparam,
+
             @FormParam("email") String emailparam
 
     ) {
@@ -62,17 +64,21 @@ public class UsersResource {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             System.out.println("=> creating user...");
 
+
             String sql = "INSERT INTO user_arts(name,email,rol,password) VALUES (?,?,?,?)";
             prestmt = conn.prepareStatement(sql);
             prestmt.setString(1,usernameparam);
             prestmt.setString(2,emailparam);
             prestmt.setString(3,rolparam);
             prestmt.setString(4,passwordparam);
+
             prestmt.executeUpdate();
             prestmt.close();
             conn.close();
 
+
             Usuario UserCreated = new Usuario(usernameparam,passwordparam,rolparam, emailparam);
+
 
             if (UserCreated != null) {
                 response= Response.ok()
@@ -104,34 +110,40 @@ public class UsersResource {
     }
 
     @GET
-    @Path("/{username}")
+    @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("username")  String username) {
+    public Response get(@PathParam("email")  String email) {
         Response response = null;
+        String emailrs;
         String namers ;
         String passwordrs ;
+
         String rolrs ;
         String emailrs;
+
         try {
 
             Class.forName(JDBC_DRIVER);
             System.out.println("intento conectarme a la base de datos");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-            System.out.println("=> consulting user..."+username);
-            String sql = "SELECT * FROM user_arts u WHERE u.name = ?";
+            System.out.println("=> consulting user..."+email);
+            String sql = "SELECT * FROM user_arts u WHERE u.email = ?";
             prestmt = conn.prepareStatement(sql);
-            prestmt.setString(1,username);
+            prestmt.setString(1,email);
             ResultSet rs = prestmt.executeQuery();
 
             while (rs.next()) {
+                emailrs = rs.getString("email");
                 namers =rs.getString("name");
                 passwordrs = rs.getString("password");
+
                 rolrs = rs.getString("rol");
                 emailrs = rs.getString("email");
 
                 Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs);
+
                 user_consulted= temp;
                 System.out.println(temp);
 
@@ -171,13 +183,15 @@ public class UsersResource {
     }
 
     @PUT
-    @Path("/{username}")
+    @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response actualizarfcoins(@FormParam("username") String usernameform,
+    public Response actualizarfcoins(@FormParam("email") String emailform,
                                      @FormParam("password") String passwordform,
                                      @FormParam("fcoins") int fcoinsform){
+
         String id_encontrado = "";
+
         PreparedStatement prestmt2=null;
         Response response = null;
         int fcoinsiniciales = 0;
@@ -187,6 +201,7 @@ public class UsersResource {
             Class.forName(JDBC_DRIVER);
             System.out.println("intento conectarme a la base de datos");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
 
             System.out.println("=> consulting user..."+usernameform);
             String sql = "SELECT * FROM user_arts u WHERE u.email ='"+ usernameform + "' AND u.password='"+passwordform+"'";
@@ -200,7 +215,9 @@ public class UsersResource {
 //                System.out.println(fcoinsiniciales);
 
 
+
             }
+
 
 
             if (!id_encontrado.isEmpty()) {
@@ -215,6 +232,7 @@ public class UsersResource {
 //                Usuario ufcoins = new Usuario(usernameform, passwordform, "",fcoinsiniciales, id_encontrado);
 
                 response= Response.ok()
+
                         .build();
             } else {
                 response = Response.status(404)

@@ -8,6 +8,7 @@ CREATE TABLE UserApp(
 
    CREATE TABLE Collection(
     name VARCHAR (20) NOT NULL,
+
     description VARCHAR (20) NOT NULL,
     category VARCHAR (20) NOT NULL,
     id_collection SERIAL (20)
@@ -15,6 +16,7 @@ CREATE TABLE UserApp(
     PRIMARY KEY (Id_collection)
     FOREIGN KEY (userApp)
         REFERENCES UserApp(name)
+
 );
 
    CREATE TABLE Art(

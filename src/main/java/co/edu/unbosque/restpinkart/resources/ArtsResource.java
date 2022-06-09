@@ -158,11 +158,11 @@ public class ArtsResource {
         };
     }
     @POST
-    @Path("/{username}")
+    @Path("/{email}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadFile(MultipartFormDataInput input,
-                               @PathParam("username") String username
+                               @PathParam("email") String email
     ) {
 
         String fileName = "";
@@ -209,7 +209,7 @@ public class ArtsResource {
                 saveFile(inputStream,newFileName,currentCollection,context);
             }
             System.out.println(rutaFinal);
-            obra = new Obras(currentCollection,title,username,Integer.parseInt(price),0,currentCollection+File.separator+newFileName) ;
+            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,currentCollection+File.separator+newFileName) ;
             System.out.println(obra.getTitle());
 
             if (obra != null){
@@ -226,7 +226,6 @@ public class ArtsResource {
                     .build();
         }
 
-        System.out.println(response.getStatus());
         return response;
     }
 
@@ -272,29 +271,39 @@ public class ArtsResource {
     }
     public Response agregarABase(){
         Response response = null;
-        int id_encontrado = -1;
+        String email_encontrado = "";
+        int id_collection = -1;
         PreparedStatement prestmt2=null;
         PreparedStatement prestmt3=null;
+        PreparedStatement prestmt4=null;
+
 
 
         try {
             Class.forName(JDBC_DRIVER);
             System.out.println("intento conectarme a la base de datos");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
-            System.out.println("=> consulting user...");
+            System.out.println("=> consulting user..."+obra.getAuthor());
+
 
             String sql = "SELECT * FROM user_arts u WHERE u.name = '" + obra.getAuthor() + "'";
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
+
             while (rs.next()) {
-                id_encontrado = rs.getInt("id_user");
+                email_encontrado = rs.getString("email");
             }
-            if (id_encontrado != -1){
-                String sql2="INSERT INTO collection_table (collection_name,id_user ) VALUES(?,?)";
+            System.out.println(email_encontrado);
+
+            if (email_encontrado != ""){
+                System.out.println("entro a crear colleccion");
+                String sql2="INSERT INTO collection_table (name,description, category, email ) VALUES(?,?,?,?)";
                 prestmt2 = conn.prepareStatement(sql2);
                 prestmt2.setString(1,obra.getCollection());
-                prestmt2.setInt(2,id_encontrado);
+                prestmt2.setString(2,"default");
+                prestmt2.setString(3,"default");
+                prestmt2.setString(4,email_encontrado);
                 prestmt2.executeUpdate();
                 prestmt2.close();
             }
@@ -305,31 +314,60 @@ public class ArtsResource {
             }
             rs.close();
             prestmt.close();
-            //creating art
-            String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,id_user)" +
-                    "VALUES (?,?,?,?,?)";
-            prestmt3 = conn.prepareStatement(sql3);
-            prestmt3.setString(1, obra.getTitle());
-            prestmt3.setInt(2,obra.getPrice());
-            prestmt3.setString(3, obra.getFile());
-            prestmt3.setString(4,obra.getCollection());
-            prestmt3.setInt(5,id_encontrado);
-            prestmt3.executeUpdate();
-            prestmt3.close();
-            conn.close();
-            response = Response.ok().entity(obra).build();
-        }catch (SQLException se) {
-            se.printStackTrace();
-            try {
-                String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,likes,id_user)" +
-                        "VALUES (?,?,?,?,?,?)";
+            //consulting collection
+            System.out.println("consulto collection");
+            String sql4 = "SELECT * FROM collection_table u WHERE u.name = ? AND u.email = ?";
+            prestmt4 = conn.prepareStatement(sql4);
+            prestmt4.setString(1,obra.getCollection());
+            prestmt4.setString(2,email_encontrado);
+            rs = prestmt4.executeQuery();
+            while (rs.next()){
+                id_collection = rs.getInt("id_collection");
+            }
+            if (id_collection!= -1){
+                String sql3 = "INSERT INTO arts_table(name,price,imagepath,forsale,id_collection)" +
+                        "VALUES (?,?,?,?,?)";
                 prestmt3 = conn.prepareStatement(sql3);
                 prestmt3.setString(1, obra.getTitle());
                 prestmt3.setInt(2,obra.getPrice());
                 prestmt3.setString(3, obra.getFile());
-                prestmt3.setString(4,obra.getCollection());
-                prestmt3.setInt(5,0);
-                prestmt3.setInt(6,id_encontrado);
+                prestmt3.setBoolean(4,true);
+                prestmt3.setInt(5,id_collection);
+                prestmt3.executeUpdate();
+                prestmt3.close();
+                response = Response.ok().entity(obra).build();
+            }
+            else{
+                response = Response.status(404)
+                        .entity(new ExceptionMessage(404, "no cree coleccion"))
+                        .build();
+            }
+            rs.close();
+            prestmt4.close();
+            conn.close();
+            //creating art
+//            String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,id_user)" +
+//                    "VALUES (?,?,?,?,?)";
+//            prestmt3 = conn.prepareStatement(sql3);
+//            prestmt3.setString(1, obra.getTitle());
+//            prestmt3.setInt(2,obra.getPrice());
+//            prestmt3.setString(3, obra.getFile());
+//            prestmt3.setString(4,obra.getCollection());
+//            prestmt3.setInt(5,id_encontrado);
+//            prestmt3.executeUpdate();
+//            prestmt3.close();
+//            conn.close();
+        }catch (SQLException se) {
+            se.printStackTrace();
+            try {
+                String sql3 = "INSERT INTO arts_table(name,price,imagepath,forsale,id_collection)" +
+                        "VALUES (?,?,?,?,?)";
+                prestmt3 = conn.prepareStatement(sql3);
+                prestmt3.setString(1, obra.getTitle());
+                prestmt3.setInt(2,obra.getPrice());
+                prestmt3.setString(3, obra.getFile());
+                prestmt3.setBoolean(4,true);
+                prestmt3.setInt(5,id_collection);
                 prestmt3.executeUpdate();
                 prestmt3.close();
                 conn.close();
@@ -359,6 +397,7 @@ public class ArtsResource {
     public List<Obras> getArtsImage(){
         System.out.println("entro a obtener obras");
         String autor = "";
+        String collection_name = "";
         Response response = null;
        try{
            Class.forName(JDBC_DRIVER);
@@ -371,19 +410,20 @@ public class ArtsResource {
            ResultSet rs = stmt.executeQuery(sql);
            while (rs.next()) {
                // Extracting row values by column name
-               String art_name = rs.getString("art_name");
+               String art_name = rs.getString("name");
                int price = rs.getInt("price");
-               String file = rs.getString("file");
-               String collection_name = rs.getString("collection_name");
-               int id = rs.getInt("id_user");
+               String file = rs.getString("imagepath");
+               boolean forsale = rs.getBoolean("forsale");
+               int id_collection = rs.getInt("id_collection");
+               System.out.println(art_name);
 
-               String sql2 = "SELECT * FROM user_arts u WHERE u.id_user =?";
-
+               String sql2 = "SELECT * FROM collection_table u WHERE u.id_collection =?";
                prestmt = conn.prepareStatement(sql2);
-               prestmt.setInt(1,id);
+               prestmt.setInt(1,id_collection);
                ResultSet rs2 = prestmt.executeQuery();
                while(rs2.next()){
-                   autor = rs2.getString("name");
+                   autor = rs2.getString("email");
+                   collection_name = rs2.getString("name");
                }
                System.out.println("lei autor");
                // Creating a new UserApp class instance and adding it to the array list

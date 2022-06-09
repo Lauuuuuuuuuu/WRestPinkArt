@@ -36,6 +36,7 @@ public class ObtenerObrasResource {
 
         System.out.println("entro a obtener obras");
         String autor = "";
+        String collection_name = "";
         Response response = null;
         try{
             Class.forName(JDBC_DRIVER);
@@ -48,26 +49,28 @@ public class ObtenerObrasResource {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 // Extracting row values by column name
-                String art_name = rs.getString("art_name");
+                String art_name = rs.getString("name");
                 int price = rs.getInt("price");
-                String file = rs.getString("file");
-                String collection_name = rs.getString("collection_name");
-                int id = rs.getInt("id_user");
-                int likes = rs.getInt("likes");
+                String file = rs.getString("imagepath");
+                boolean forsale = rs.getBoolean("forsale");
+                int id_collection = rs.getInt("id_collection");
+                System.out.println(art_name);
 
-                String sql2 = "SELECT * FROM user_arts u WHERE u.id_user =?";
-
+                String sql2 = "SELECT * FROM collection_table u WHERE u.id_collection =?";
                 prestmt = conn.prepareStatement(sql2);
-                prestmt.setInt(1,id);
+                prestmt.setInt(1,id_collection);
                 ResultSet rs2 = prestmt.executeQuery();
                 while(rs2.next()){
-                    autor = rs2.getString("name");
+                    autor = rs2.getString("email");
+                    collection_name = rs2.getString("name");
                 }
+                System.out.println("lei autor");
                 // Creating a new UserApp class instance and adding it to the array list
-                prestmt.close();
                 rs2.close();
-                Obras agregarObra = new Obras(collection_name,art_name,autor,price,likes,file);
+                prestmt.close();
+                Obras agregarObra = new Obras(collection_name,art_name,autor,price,0,file);
                 listaObras.add(agregarObra);
+                System.out.println(agregarObra.getTitle());
             }
             rs.close();
             stmt.close();
@@ -77,7 +80,7 @@ public class ObtenerObrasResource {
             }
             else {
                 response = Response.status(404)
-                        .entity(new ExceptionMessage(404, "User not found"))
+                        .entity(new ExceptionMessage(404, "Not found"))
                         .build();
             }
         } catch (SQLException e) {
@@ -97,7 +100,6 @@ public class ObtenerObrasResource {
                 se.printStackTrace();
             }
         }
-        System.out.println(response.toString());
         return response;
     }
 

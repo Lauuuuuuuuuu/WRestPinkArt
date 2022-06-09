@@ -3,12 +3,12 @@ const form = document.querySelector("form")
 form.onsubmit = async (e)=> {
     e.preventDefault()
 
-    let username = sessionStorage.getItem('username')
-    console.log(username)
+    let email = sessionStorage.getItem('email')
+    console.log(email)
     const formData =new FormData(form);
 
     try {
-        let response = await fetch(`./api/users/arts/${username}`, {
+        let response = await fetch(`./api/users/arts/${email}`, {
             method: 'POST',
             headers: {
 
@@ -20,7 +20,10 @@ form.onsubmit = async (e)=> {
         });
         let result = await response.json();
         console.log(result);
-
+        console.log(result.file);
+        if(result.file != ""){
+            window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/prueba.html"
+        }
 
     }
     catch (r) {
