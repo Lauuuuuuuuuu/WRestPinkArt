@@ -5,25 +5,20 @@ import com.opencsv.bean.CsvBindByName;
 import java.util.Objects;
 
 public class Usuario {
-    @CsvBindByName
+    private String email;
     private String username;
-    @CsvBindByName
     private String password;
-    @CsvBindByName
     private String role;
-    @CsvBindByName
     private int coins;
-    private int id;
 
     public Usuario (){
 
     }
-    public Usuario(String username, String password, String role, int coins, int id) {
+    public Usuario(String email, String username, String password, String role, int coins) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.coins = coins;
-        this.id = id;
     }
 
     public String getUsername() {
@@ -58,9 +53,13 @@ public class Usuario {
         this.coins = coins;
     }
 
-    public int getId(){return id;}
+    public String getEmail() {
+        return email;
+    }
 
-    public void setId(int id){this.id = id;}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     @Override
     public String toString() {

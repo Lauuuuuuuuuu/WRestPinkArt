@@ -4,11 +4,11 @@ form.onsubmit= async (e) =>{
     e.preventDefault();
 
 
-    let user = document.getElementById("textbox-login").value;
-    sessionStorage.setItem('username',user);
+    let email = document.getElementById("emailbox-login").value;
+    sessionStorage.setItem('email',email);
     console.log(sessionStorage.getItem('username'));
     try{
-        let response = await fetch(`./api/users/${user}`, {
+        let response = await fetch(`./api/users/${email}`, {
             method: 'GET',
             headers: {
 

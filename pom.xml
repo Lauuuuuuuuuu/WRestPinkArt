@@ -35,8 +35,6 @@
             <artifactId>resteasy-multipart-provider</artifactId>
             <version>4.7.6.Final</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

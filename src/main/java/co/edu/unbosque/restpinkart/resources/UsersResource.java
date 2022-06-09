@@ -51,7 +51,8 @@ public class UsersResource {
 
             @FormParam("username") String usernameparam,
             @FormParam("password") String passwordparam,
-            @FormParam("role") String roleparam
+            @FormParam("role") String roleparam,
+            @FormParam("email") String emailparam
 
     ) {
         Response response;
@@ -61,17 +62,18 @@ public class UsersResource {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             System.out.println("=> creating user...");
 
-            String sql = "INSERT INTO user_arts(name,password,role,fcoins) VALUES (?,?,?,?)";
+            String sql = "INSERT INTO user_arts(email,name,password,role,fcoins) VALUES (?,?,?,?,?)";
             prestmt = conn.prepareStatement(sql);
-            prestmt.setString(1,usernameparam);
-            prestmt.setString(2,passwordparam);
-            prestmt.setString(3,roleparam);
-            prestmt.setInt(4,0);
+            prestmt.setString(1,emailparam);
+            prestmt.setString(2,usernameparam);
+            prestmt.setString(3,passwordparam);
+            prestmt.setString(4,roleparam);
+            prestmt.setInt(5,0);
             prestmt.executeUpdate();
             prestmt.close();
             conn.close();
 
-            Usuario UserCreated = new Usuario(usernameparam,passwordparam,roleparam,0,0);
+            Usuario UserCreated = new Usuario(emailparam,usernameparam,passwordparam,roleparam,0);
 
             if (UserCreated != null) {
                 response= Response.ok()
@@ -108,35 +110,35 @@ public class UsersResource {
 
 
     @GET
-    @Path("/{username}")
+    @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("username")  String username) {
+    public Response get(@PathParam("email")  String email) {
         Response response = null;
+        String emailrs;
         String namers ;
         String passwordrs ;
         String rolers ;
         int fcoinsrs ;
-        int idrs =0;
         try {
 
             Class.forName(JDBC_DRIVER);
             System.out.println("intento conectarme a la base de datos");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-            System.out.println("=> consulting user..."+username);
-            String sql = "SELECT * FROM user_arts u WHERE u.name = ?";
+            System.out.println("=> consulting user..."+email);
+            String sql = "SELECT * FROM user_arts u WHERE u.email = ?";
             prestmt = conn.prepareStatement(sql);
-            prestmt.setString(1,username);
+            prestmt.setString(1,email);
             ResultSet rs = prestmt.executeQuery();
 
             while (rs.next()) {
+                emailrs = rs.getString("email");
                 namers =rs.getString("name");
                 passwordrs = rs.getString("password");
                 rolers = rs.getString("role");
                 fcoinsrs = rs.getInt("fcoins");
-                idrs =  rs.getInt("id_user") ;
-                Usuario temp = new Usuario(namers,passwordrs,rolers,fcoinsrs,idrs);
+                Usuario temp = new Usuario(emailrs,namers,passwordrs,rolers,fcoinsrs);
                 user_consulted= temp;
                 System.out.println(temp);
 
@@ -175,13 +177,14 @@ public class UsersResource {
     }
 
     @PUT
-    @Path("/{username}")
+    @Path("/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response actualizarfcoins(@FormParam("username") String usernameform,
+    public Response actualizarfcoins(@FormParam("email") String emailform,
                                      @FormParam("password") String passwordform,
                                      @FormParam("fcoins") int fcoinsform){
-        int id_encontrado = -1;
+        String emialencontrado="";
+        String name = "";
         PreparedStatement prestmt2=null;
         Response response = null;
         int fcoinsiniciales = 0;
@@ -192,35 +195,36 @@ public class UsersResource {
             System.out.println("intento conectarme a la base de datos");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
 
-            System.out.println("=> consulting user..."+usernameform);
-            String sql = "SELECT * FROM user_arts u WHERE u.name = ? AND u.password = ?";
+            System.out.println("=> consulting user..."+emailform);
+            String sql = "SELECT * FROM user_arts u WHERE u.email = ? AND u.password = ?";
             prestmt = conn.prepareStatement(sql);
-            prestmt.setString(1,usernameform);
+            prestmt.setString(1,emailform);
             prestmt.setString(2,passwordform);
             ResultSet rs = prestmt.executeQuery();
 
             while (rs.next()) {
-                id_encontrado=rs.getInt("id_user");
+                emialencontrado=rs.getString("email");
+                name = rs.getString("name");
                 fcoinsiniciales = rs.getInt("fcoins") + fcoinsform;
-                System.out.println(id_encontrado);
+                System.out.println(emialencontrado);
                 System.out.println(fcoinsiniciales);
 
 
             }
 
 
-            if (id_encontrado != -1) {
-                String sql2="UPDATE user_arts SET fcoins = ? WHERE id_user = ?";
+            if (emialencontrado != "") {
+                String sql2="UPDATE user_arts SET fcoins = ? WHERE email = ?";
                 prestmt2 = conn.prepareStatement(sql2);
                 prestmt2.setInt(1,fcoinsiniciales);
-                prestmt2.setInt(2,id_encontrado);
+                prestmt2.setString(2,emialencontrado);
                 prestmt2.executeUpdate();
 
                 prestmt2.close();
-                Usuario ufcoins = new Usuario(usernameform, passwordform, "",fcoinsiniciales, id_encontrado);
+                Usuario usfcoins = new Usuario(emailform,name, passwordform, "",fcoinsiniciales);
 
                 response= Response.ok()
-                        .entity(ufcoins)
+                        .entity(usfcoins)
                         .build();
             } else {
                 response = Response.status(404)

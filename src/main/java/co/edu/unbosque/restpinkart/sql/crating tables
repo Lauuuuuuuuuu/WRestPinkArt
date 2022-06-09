@@ -10,9 +10,10 @@ CREATE TABLE user_arts(
 CREATE TABLE collection_table(
     collection_name VARCHAR (20) NOT NULL,
     name VARCHAR (20) NOT NULL,
+	id_user INT NOT NULL,
     PRIMARY KEY (collection_name),
-    FOREIGN KEY (id)
-        REFERENCES user_arts (name)
+    FOREIGN KEY (id_user)
+        REFERENCES user_arts (id_user)
 );
 
 
