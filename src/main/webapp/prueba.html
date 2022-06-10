@@ -58,9 +58,25 @@
                collection.innerHTML = "Colección: "+register["collection"];
                collection.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  font-size: 20px;"
 
-               let likes = document.createElement("p")
+               let likes = document.createElement("button")
                likes.innerHTML = "Likes: "+register["likes"]
                likes.style = "font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;q  font-size: 20px;"
+               /*    likes.document.ready(function(){
+                       $("likes").click(function(){
+                           if( $(this).val() == 0 ){
+                               $(this).val(1);
+                           }else{
+                               $(this).val(0);
+                           }
+                       })
+                   })*/
+
+               // String id_art = register["id_art"];
+               let id_art = document.createElement("button")
+               id_art.innerHTML = "Id obra: "+ register["id_art"];
+               id_art.id = register["id_art"];
+               console.log(register["id_art"]);
+
 
 
                obra.appendChild(image);
@@ -69,6 +85,7 @@
                obra.appendChild(price);
                obra.appendChild(collection);
                obra.appendChild(likes);
+               obra.appendChild(id_art);
                container.appendChild(obra);
            })
         })

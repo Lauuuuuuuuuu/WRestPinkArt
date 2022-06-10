@@ -6,7 +6,7 @@ form.onsubmit= async (e) =>{
 
     let email = document.getElementById("emailbox-login").value;
     sessionStorage.setItem('email',email);
-    console.log(sessionStorage.getItem('username'));
+    console.log(sessionStorage.getItem('email'));
     try{
         let response = await fetch(`./api/users/${email}`, {
             method: 'GET',

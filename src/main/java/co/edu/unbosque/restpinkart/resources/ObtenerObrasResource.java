@@ -56,6 +56,7 @@ public class ObtenerObrasResource {
                 boolean forsale = rs.getBoolean("forsale");
                 int id_collection = rs.getInt("id_collection");
                 System.out.println(art_name);
+                int id_art = rs.getInt("id_art");
 
                 String sql2 = "SELECT * FROM collection_table u WHERE u.id_collection =?";
                 prestmt = conn.prepareStatement(sql2);
