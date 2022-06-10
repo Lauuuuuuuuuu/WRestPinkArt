@@ -49,7 +49,7 @@ public class AgregarUsuario {
                 rolrs = rs.getString("rol");
                 emailrs = rs.getString("email");
 
-                Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs);
+                Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs,0);
                 usuarios.add(temp);
             }
 

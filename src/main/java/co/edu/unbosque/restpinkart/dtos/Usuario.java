@@ -8,25 +8,17 @@ public class Usuario {
     private String email;
     private String username;
     private String password;
+    private String role;
+    private int coins;
 
-    @CsvBindByName
-    private String rol;
-    private String email;
+    public Usuario (){
 
-  
-
-
-
-
-
-
-    public Usuario(String username, String password, String rol,  String email) {
+    }
+    public Usuario(String email, String username, String password, String role, int coins) {
         this.username = username;
         this.password = password;
-        this.rol = rol;
-        this.email = email;
-
-
+        this.role = role;
+        this.coins = coins;
     }
 
     public String getUsername() {
@@ -45,17 +37,6 @@ public class Usuario {
         this.password = password;
     }
 
-    public String getRole() {
-        return rol;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
 
     public String getEmail() {
         return email;
@@ -66,9 +47,25 @@ public class Usuario {
         this.email = email;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
+    }
+
     @Override
     public String toString() {
-        return "User{" + "username = " + username + ", password = " + password + ", role =" + rol + "}";
+        return "User{" + "username = " + username + ", password = " + password + ", role =" + role + "}";
     }
 
     @Override
@@ -76,11 +73,8 @@ public class Usuario {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Usuario user = (Usuario) o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(rol, user.rol);
+        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(role, user.role);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, password, rol);
-    }
+
 }

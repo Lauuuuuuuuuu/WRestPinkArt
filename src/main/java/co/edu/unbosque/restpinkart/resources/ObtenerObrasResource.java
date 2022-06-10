@@ -23,10 +23,11 @@ public class ObtenerObrasResource {
     PreparedStatement prestmt = null;
     Statement stmt = null;
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "Hola.123";
+    static final String PASS = "20031812";
     List<Obras> listaObras = new ArrayList<>();
 
 
