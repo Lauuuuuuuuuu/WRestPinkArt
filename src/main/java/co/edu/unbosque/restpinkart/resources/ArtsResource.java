@@ -32,11 +32,11 @@ public class ArtsResource {
     Obras obra = null;
     List<Obras> listaObras;
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "Zeref29714526?";
 
     private final String UPLOAD_DIRECTORY= File.separator;
 
@@ -210,7 +210,7 @@ public class ArtsResource {
                 saveFile(inputStream,newFileName,currentCollection,context);
             }
             System.out.println(rutaFinal);
-            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,currentCollection+File.separator+newFileName) ;
+            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,currentCollection+File.separator+newFileName,0) ;
             System.out.println(obra.getTitle());
 
             if (obra != null){
@@ -287,7 +287,7 @@ public class ArtsResource {
             System.out.println("=> consulting user..."+obra.getAuthor());
 
 
-            String sql = "SELECT * FROM user_arts u WHERE u.name = '" + obra.getAuthor() + "'";
+            String sql = "SELECT * FROM user_arts u WHERE u.email = '" + obra.getAuthor() + "'";
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -314,7 +314,6 @@ public class ArtsResource {
                         .build();
             }
             rs.close();
-            prestmt.close();
             //consulting collection
             System.out.println("consulto collection");
             String sql4 = "SELECT * FROM collection_table u WHERE u.name = ? AND u.email = ?";
@@ -345,6 +344,7 @@ public class ArtsResource {
             }
             rs.close();
             prestmt4.close();
+            stmt.close();
             conn.close();
             //creating art
 //            String sql3 = "INSERT INTO arts_table(art_name,price,file,collection_name,id_user)" +
@@ -416,6 +416,7 @@ public class ArtsResource {
                String file = rs.getString("imagepath");
                boolean forsale = rs.getBoolean("forsale");
                int id_collection = rs.getInt("id_collection");
+               int id_art = rs.getInt("id_art");
                System.out.println(art_name);
 
                String sql2 = "SELECT * FROM collection_table u WHERE u.id_collection =?";
@@ -430,7 +431,7 @@ public class ArtsResource {
                // Creating a new UserApp class instance and adding it to the array list
                prestmt.close();
                rs2.close();
-                Obras agregarObra = new Obras(collection_name,art_name,autor,price,0,file);
+                Obras agregarObra = new Obras(collection_name,art_name,autor,price,0,file,id_art);
                listaObras.add(agregarObra);
                System.out.println(agregarObra.getTitle());
            }

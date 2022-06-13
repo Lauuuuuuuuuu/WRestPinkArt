@@ -21,6 +21,7 @@ form.onsubmit = async (e)=> {
         console.log(result);
         sessionStorage.setItem('username',document.getElementById("name1").value)
         sessionStorage.setItem('role',document.getElementById("roleInput").value);
+        sessionStorage.setItem('email',document.getElementById("email").value);
         direction=window.sessionStorage.getItem('role');
         console.log(direction)
         if (direction == "Artista"){

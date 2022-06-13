@@ -22,11 +22,11 @@ public class walletResource {
 
 
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "Zeref29714526?";
     //metodo de compra
 
     @PUT
@@ -70,7 +70,7 @@ public class walletResource {
                 }
             }
 
-            Usuario userfound = users.stream().filter(user -> userBuyer.equals(user.getUsername())).findFirst().orElse(null);
+            Usuario userfound = users.stream().filter(user -> userBuyer.equals(user.getEmail())).findFirst().orElse(null);
             if (userfound != null) {
                 return Response.ok().entity(userfound).build();
             }

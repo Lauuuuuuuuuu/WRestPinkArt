@@ -22,12 +22,11 @@ public class Wallet {
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "Hola.123";
+    static final String PASS = "Zeref29714526?";
 
     public Optional<Boolean> buy(String userBuyer, String Fcoins, String art_name){
         Connection conn = null;
         PreparedStatement stmt = null;
-        PreparedStatement stmt1 = null;
         try {
             // Registering the JDBC driver
             Class.forName(JDBC_DRIVER);
@@ -36,8 +35,11 @@ public class Wallet {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             List<Usuario> users = new AgregarUsuario().getUsers();
 
+            System.out.println(users.toString());
 
-            Usuario user1 = users.stream().filter(user-> userBuyer.equals(user.getUsername())).findFirst().orElse(null);
+            Usuario user1 = users.stream().filter(user -> userBuyer.equals(user.getEmail())).findFirst().orElse(null);
+
+            user1.toString();
 
             float numFcoins = Float.parseFloat(Fcoins);
 
@@ -45,7 +47,7 @@ public class Wallet {
             System.out.println(numUser);
 
             float newFcoins = 0;
-            String type = "buy";
+            String type = "compra";
             Date date = new Date();
             long mili = date.getTime();
             Timestamp time = new Timestamp(mili);
@@ -57,21 +59,15 @@ public class Wallet {
 
             newFcoins =numFcoins*(-1);
 
-            String sql = "INSERT INTO Wallet_table (email,password,total) VALUES (?,?,?)";
+            String sql = "INSERT INTO Wallet_table (email,type,fcoins,registeredat) VALUES (?,?,?,?)";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, user1.getUsername());
-            stmt.setInt(2, Integer.parseInt(user1.getPassword()));
+            stmt.setString(1, user1.getEmail());
+            stmt.setString(2, type);
             stmt.setFloat(3,newFcoins);
+            stmt.setTimestamp(4,time);
             stmt.executeUpdate();
 
-            String sql1 = "UPDATE ownership_table SET email = ? WHERE art_name = ?";
-            stmt1 = conn.prepareStatement(sql1);
-            stmt1.setString(1,userBuyer);
-            stmt1.setString(2,art_name);
-            stmt1.executeUpdate();
-
             stmt.close();
-            stmt1.close();
 //        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //            return Optional.of(false);
@@ -91,7 +87,6 @@ public class Wallet {
         } finally {
             // Cleaning-up environment
             try {
-                if (stmt1 != null) stmt1.close();
                 if (stmt != null) stmt.close();
                 if (conn != null) conn.close();
             } catch (SQLException se) {
@@ -111,20 +106,21 @@ public class Wallet {
             // Opening database connection
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             List<Usuario> users = new AgregarUsuario().getUsers();
-            Usuario user1 = users.stream().filter(user-> username.equals(user.getUsername())).findFirst().orElse(null);
+            Usuario user1 = users.stream().filter(user-> username.equals(user.getEmail())).findFirst().orElse(null);
 
             float numFcoins = Float.parseFloat(Fcoins);
 
-            String type = "sale";
+            String type = "venta";
             Date date = new Date();
             long mili = date.getTime();
             Timestamp time = new Timestamp(mili);
 
-            String sql = "INSERT INTO Wallet_table (email,password,total) VALUES (?,?,?)";
+            String sql = "INSERT INTO Wallet_table (email,type,fcoins,registeredat) VALUES (?,?,?,?)";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, user1.getUsername());
-            stmt.setInt(2, Integer.parseInt(user1.getPassword()));
+            stmt.setString(1, user1.getEmail());
+            stmt.setString(2, type);
             stmt.setFloat(3,numFcoins);
+            stmt.setTimestamp(4,time);
 
             stmt.executeUpdate();
 
@@ -160,14 +156,14 @@ public class Wallet {
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             List<Usuario> users = new AgregarUsuario().getUsers();
 
-            Usuario user1 = users.stream().filter(user-> username.equals(user.getUsername())).findFirst().orElse(null);
+            Usuario user1 = users.stream().filter(user-> username.equals(user.getEmail())).findFirst().orElse(null);
 
             stmt1 = conn.createStatement();
-            String query1 = "SELECT total FROM Wallet_table x WHERE x.email = '"+user1.getEmail()+"'";
+            String query1 = "SELECT fcoins FROM Wallet_table x WHERE x.email = '"+user1.getEmail()+"'";
             ResultSet rs = stmt1.executeQuery(query1);
 
             while (rs.next()){
-                numUser += Float.parseFloat(rs.getString("total"));
+                numUser += Float.parseFloat(rs.getString("fcoins"));
             }
 
             rs.close();

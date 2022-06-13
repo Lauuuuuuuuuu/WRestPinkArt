@@ -22,7 +22,7 @@ form.onsubmit = async (e)=> {
         console.log(result);
         console.log(result.file);
         if(result.file != ""){
-            window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/prueba.html"
+            window.location.href = "http://localhost:8080/WRestPinkArt-1.0-SNAPSHOT/index.html"
         }
 
     }

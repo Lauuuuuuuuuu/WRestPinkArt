@@ -28,11 +28,11 @@ public class UsersResource {
     Usuario user_consulted = null;
 
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "Zeref29714526?";
 
 
     @GET
@@ -70,7 +70,7 @@ public class UsersResource {
             System.out.println("=> creating user...");
 
 
-            String sql = "INSERT INTO user_arts(name,email,rol,password) VALUES (?,?,?,?)";
+            String sql = "INSERT INTO user_arts(name,email,role,password,fcoins) VALUES (?,?,?,?,0)";
             prestmt = conn.prepareStatement(sql);
             prestmt.setString(1,usernameparam);
             prestmt.setString(2,emailparam);
@@ -139,14 +139,13 @@ public class UsersResource {
             ResultSet rs = prestmt.executeQuery();
 
             while (rs.next()) {
-                emailrs = rs.getString("email");
                 namers =rs.getString("name");
                 passwordrs = rs.getString("password");
                 fcoinsrs = rs.getInt("fcoins");
-                rolrs = rs.getString("rol");
+                rolrs = rs.getString("role");
                 emailrs = rs.getString("email");
 
-                Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs,fcoinsrs);
+                Usuario temp = new Usuario(emailrs,namers,passwordrs,rolrs,fcoinsrs);
 
                 user_consulted= temp;
                 System.out.println(temp);

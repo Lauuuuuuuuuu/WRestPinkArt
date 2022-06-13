@@ -29,7 +29,7 @@
         .then(response => response.json())
         .then(jsondata =>{
            jsondata.map(register=>{
-
+               console.log(register)
                let obra = document.createElement("div");
                obra.style = "max-width:400px;background-color: #e7e0e0bd;border-radius: 5px;border-style: groove;"
                +" margin-top: 100px;margin-right: auto; margin-left: auto;margin-bottom: 100px;min-width: 800px;"
@@ -75,8 +75,6 @@
                let id_art = document.createElement("button")
                id_art.innerHTML = "Id obra: "+ register["id_art"];
                id_art.id = register["id_art"];
-               console.log(register["id_art"]);
-
 
 
                obra.appendChild(image);
@@ -86,6 +84,63 @@
                obra.appendChild(collection);
                obra.appendChild(likes);
                obra.appendChild(id_art);
+
+               let artPrice = document.createElement("input");
+               artPrice.type = "hidden";
+               artPrice.name = "price"
+               artPrice.value =register["price"];
+
+               let userBuyer = document.createElement("input");
+               userBuyer.type = "hidden";
+               userBuyer.name = "userBuyer";
+               userBuyer.value = sessionStorage.getItem('email');
+
+               let userSeller = document.createElement("input");
+               userSeller.type = "hidden";
+               userSeller.name = "userSeller";
+               userSeller.value = register["author"];
+
+               let artId = document.createElement("input");
+               artId.type = "hidden";
+               artId.name = "artId";
+               artId.value = register["id_art"];
+
+               let submit = document.createElement("button");
+               submit.type = "submit";
+               submit.innerHTML = "Comprar";
+               submit.style = "width:80px; height:40px;";
+
+               let comprar = document.createElement("form");
+               comprar.appendChild(artPrice);
+               comprar.appendChild(userBuyer);
+               comprar.appendChild(userSeller);
+               comprar.appendChild(artId);
+               comprar.appendChild(submit);
+
+               comprar.onsubmit = async (e)=>{
+                   e.preventDefault();
+                   const formData = new FormData(comprar);
+
+                   let response = await fetch('./api/wallet/buy', {
+                       method: 'PUT',
+                       headers: {
+                           "Content-Type": "application/x-www-form-urlencoded",
+                       },
+                       body: new URLSearchParams(formData),
+                   });
+
+                   if(response.ok){
+                       alert('Compra realizada con exito');
+                       window.location.href = "index.html";
+                   }else {
+                       alert('Saldo Insuficiente para comprar esta obra');
+                   }
+               }
+
+               let formdiv = document.createElement("div");
+               formdiv.appendChild(comprar);
+               obra.appendChild(formdiv);
+
                container.appendChild(obra);
            })
         })

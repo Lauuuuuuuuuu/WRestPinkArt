@@ -15,6 +15,7 @@ public class Usuario {
 
     }
     public Usuario(String email, String username, String password, String role, int coins) {
+        this.email = email;
         this.username = username;
         this.password = password;
         this.role = role;

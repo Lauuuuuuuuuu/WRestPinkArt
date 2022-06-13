@@ -31,6 +31,7 @@ public class AgregarUsuario {
         String passwordrs ;
         String rolrs ;
         String emailrs;
+        int fcoinsrs;
         try {
 
             Class.forName(JDBC_DRIVER);
@@ -46,10 +47,11 @@ public class AgregarUsuario {
             while (rs.next()) {
                 namers =rs.getString("name");
                 passwordrs = rs.getString("password");
-                rolrs = rs.getString("rol");
+                rolrs = rs.getString("role");
                 emailrs = rs.getString("email");
+                fcoinsrs = rs.getInt("fcoins");
 
-                Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs,0);
+                Usuario temp = new Usuario(emailrs,namers,passwordrs,rolrs,fcoinsrs);
                 usuarios.add(temp);
             }
 
