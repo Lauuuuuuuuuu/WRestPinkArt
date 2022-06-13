@@ -23,11 +23,11 @@ public class ObtenerObrasResource {
     PreparedStatement prestmt = null;
     Statement stmt = null;
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "Zeref29714526?";
+    static final String PASS = "20031812";
     List<Obras> listaObras = new ArrayList<>();
 
 
@@ -98,6 +98,72 @@ public class ObtenerObrasResource {
                 if (prestmt != null) prestmt.close();
                 if (conn != null) conn.close();
                 if(stmt!=null) stmt.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        return response;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cantidadArts() {
+
+        System.out.println("entro a obtener obras");
+        String autor = "";
+        String collection_name = "";
+        Response response = null;
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("intento conectarme a la base de datos");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            System.out.println("=> consulting arts...");
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM arts_table";
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                // Extracting row values by column name
+                String art_name = rs.getString("name");
+                int id_collection = rs.getInt("id_collection");
+                System.out.println(art_name);
+                int id_art = rs.getInt("id_art");
+
+                String sql2 = "SELECT * FROM collection_table u WHERE u.id_collection =?";
+                prestmt = conn.prepareStatement(sql2);
+                prestmt.setInt(1, id_collection);
+                ResultSet rs2 = prestmt.executeQuery();
+                while (rs2.next()) {
+                    autor = rs2.getString("email");
+                    collection_name = rs2.getString("name");
+                }
+
+
+
+            }
+            rs.close();
+            stmt.close();
+            conn.close();
+            if (listaObras != null) {
+                response = Response.ok().entity(listaObras).build();
+                System.out.println(listaObras.toString());
+            } else {
+                response = Response.status(404)
+                        .entity(new ExceptionMessage(404, "Not found"))
+                        .build();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response = Response.serverError().build();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            response = Response.serverError().build();
+        } finally {
+            try {
+                if (prestmt != null) prestmt.close();
+                if (conn != null) conn.close();
+                if (stmt != null) stmt.close();
             } catch (SQLException se) {
                 se.printStackTrace();
             }

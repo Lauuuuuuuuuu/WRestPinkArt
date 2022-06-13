@@ -22,11 +22,11 @@ public class walletResource {
 
 
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "Zeref29714526?";
+    static final String PASS = "20031812";
     //metodo de compra
 
     @PUT
@@ -36,7 +36,8 @@ public class walletResource {
     public Response buyArt(@FormParam("userBuyer") String userBuyer,
                            @FormParam("price") String price,
                            @FormParam("userSeller") String userSeller,
-                           @FormParam("name_art") String name_art) {
+                           @FormParam("name_art") String name_art,
+                           @FormParam("artId") int artId){
 
         //cambiar metodo
         boolean buy = new Wallet().buy(userBuyer, price, name_art).get();
@@ -44,6 +45,7 @@ public class walletResource {
         Connection conn = null;
 
         if (buy) {
+            new Wallet().modificarDueño(userBuyer,artId);
             new Wallet().sale(userSeller, price);
 
             List<Usuario> users = null;

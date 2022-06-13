@@ -5,6 +5,7 @@ import co.edu.unbosque.restpinkart.dtos.Obras;
 
 import javax.ws.rs.*;
 
+import co.edu.unbosque.restpinkart.services.LikeService;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
@@ -16,7 +17,7 @@ import java.io.*;
 import java.util.*;
 import javax.ws.rs.core.MultivaluedMap;
 import java.sql.*;
-
+import java.util.Date;
 
 
 @Path("/users/arts")
@@ -32,11 +33,11 @@ public class ArtsResource {
     Obras obra = null;
     List<Obras> listaObras;
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "Zeref29714526?";
+    static final String PASS = "20031812";
 
     private final String UPLOAD_DIRECTORY= File.separator;
 
@@ -209,11 +210,9 @@ public class ArtsResource {
 
                 saveFile(inputStream,newFileName,currentCollection,context);
             }
-            System.out.println(rutaFinal);
-            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,currentCollection+File.separator+newFileName,0) ;
-            System.out.println(obra.getTitle());
-
+            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,"artes"+File.separator+newFileName,0) ;
             if (obra != null){
+                System.out.println("pase ");
                 response = agregarABase();
 
             }
@@ -250,7 +249,8 @@ public class ArtsResource {
         String uploadPath = "";
         try {
             // Complementing servlet path with the relative path on the server
-            uploadPath = context.getRealPath("") + UPLOAD_DIRECTORY+currentCollection;
+            uploadPath = context.getRealPath("") + UPLOAD_DIRECTORY+"artes";
+            System.out.println("Path: "+ uploadPath);
 
             // Creating the upload folder, if not exist
             File uploadDir = new File(uploadPath);
@@ -274,10 +274,12 @@ public class ArtsResource {
         Response response = null;
         String email_encontrado = "";
         int id_collection = -1;
+        int id_art = -1;
         PreparedStatement prestmt2=null;
         PreparedStatement prestmt3=null;
         PreparedStatement prestmt4=null;
-
+        PreparedStatement prestmt5=null;
+        PreparedStatement prestmt6=null;
 
 
         try {
@@ -295,7 +297,7 @@ public class ArtsResource {
             while (rs.next()) {
                 email_encontrado = rs.getString("email");
             }
-            System.out.println(email_encontrado);
+            System.out.println(email_encontrado+" pase?");
 
             if (email_encontrado != ""){
                 System.out.println("entro a crear colleccion");
@@ -336,6 +338,34 @@ public class ArtsResource {
                 prestmt3.executeUpdate();
                 prestmt3.close();
                 response = Response.ok().entity(obra).build();
+                rs.close();
+                //consulting id_art
+                String sql6 = "SELECT * FROM arts_table a WHERE a.id_collection = ? AND a.imagepath = ?";
+                prestmt6 = conn.prepareStatement(sql6);
+                prestmt6.setInt(1,id_collection);
+                prestmt6.setString(2,obra.getFile());
+                rs = prestmt6.executeQuery();
+
+                while (rs.next()){
+                    id_art = rs.getInt("id_art");
+                }
+                //end of consulting
+                if (id_art != -1){
+                    Date date = new Date();
+                    long mili = date.getTime();
+                    Timestamp time = new Timestamp(mili);
+
+                    String sql5 = "INSERT INTO ownership(id_art,email,registeredAt) VALUES (?,?,?)";
+                    prestmt5 = conn.prepareStatement(sql5);
+                    prestmt5.setInt(1,id_art);
+                    prestmt5.setString(2,email_encontrado);
+                    prestmt5.setTimestamp(3,time);
+                    prestmt5.executeUpdate();
+                    prestmt5.close();
+                }
+                rs.close();
+                prestmt6.close();
+
             }
             else{
                 response = Response.status(404)
@@ -462,6 +492,41 @@ public class ArtsResource {
            }
        }
        return listaObras;
+    }
+
+    // Obtiene el número de likes de un arte
+    @GET
+    @Path("/{id_art}/likes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listTotalLikes(@PathParam("id_art") String id_art) {
+
+        Connection conn = null;
+        int cantidadLikes = 0;
+
+        try {
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            LikeService likeService = new LikeService(conn);
+            cantidadLikes = likeService.getLikesArt(id_art);
+
+            conn.close();
+
+        } catch (SQLException se) {
+            se.printStackTrace(); // Handling errors from database
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace(); // Handling errors from JDBC driver
+        } finally {
+            // Cleaning-up environment
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return Response.ok().entity(cantidadLikes).build();
     }
 
 }

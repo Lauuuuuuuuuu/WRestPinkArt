@@ -18,11 +18,11 @@ public class Wallet {
     ServletContext context;
 
     static final String JDBC_DRIVER = "org.postgresql.Driver";
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/prueba1";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/postgres";
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "Zeref29714526?";
+    static final String PASS = "20031812";
 
     public Optional<Boolean> buy(String userBuyer, String Fcoins, String art_name){
         Connection conn = null;
@@ -68,6 +68,8 @@ public class Wallet {
             stmt.executeUpdate();
 
             stmt.close();
+
+
 //        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //            return Optional.of(false);
@@ -186,5 +188,33 @@ public class Wallet {
             }
         }
         return numUser;
+    }
+
+    public void modificarDueño(String newOner, int id_art ){
+        Connection conn = null;
+        PreparedStatement prestmt = null;
+        try {
+            Class.forName(JDBC_DRIVER);
+            // Opening database connection
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            String sql2 = "UPDATE ownership SET email = ? WHERE id_art = ?";
+            prestmt = conn.prepareStatement(sql2);
+            prestmt.setString(1,newOner);
+            prestmt.setInt(2,id_art);
+            prestmt.executeUpdate();
+            prestmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }finally {
+            // Cleaning-up environment
+            try {
+                if (prestmt != null) prestmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
     }
 }
