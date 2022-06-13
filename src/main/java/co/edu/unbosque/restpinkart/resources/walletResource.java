@@ -26,7 +26,7 @@ public class walletResource {
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "1007101050";
     //metodo de compra
 
     @PUT

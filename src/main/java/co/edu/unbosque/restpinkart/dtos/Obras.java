@@ -4,6 +4,9 @@ import com.opencsv.bean.CsvBindByName;
 
 public class Obras {
 
+    public Obras() {
+    }
+
     public Obras(String collection, String title, String author, int price, int likes, String file) {
         this.collection = collection;
         this.title = title;
@@ -66,4 +69,6 @@ public class Obras {
     public void setFile(String file) {
         this.file = file;
     }
+
+
 }

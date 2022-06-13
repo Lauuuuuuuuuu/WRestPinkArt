@@ -5,6 +5,7 @@ import co.edu.unbosque.restpinkart.dtos.Obras;
 
 import javax.ws.rs.*;
 
+import co.edu.unbosque.restpinkart.services.LikeService;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
@@ -36,7 +37,7 @@ public class ArtsResource {
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "1007101050";
 
     private final String UPLOAD_DIRECTORY= File.separator;
 
@@ -165,7 +166,7 @@ public class ArtsResource {
     public Response uploadFile(MultipartFormDataInput input,
                                @PathParam("email") String email
     ) {
-
+        System.out.println("Email test: "+ email);
         String fileName = "";
         Response response = null;
         System.out.println("entro");
@@ -209,11 +210,12 @@ public class ArtsResource {
 
                 saveFile(inputStream,newFileName,currentCollection,context);
             }
-            System.out.println(rutaFinal);
-            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,currentCollection+File.separator+newFileName) ;
-            System.out.println(obra.getTitle());
+
+            obra = new Obras(currentCollection,title,email,Integer.parseInt(price),0,"artes"+File.separator+newFileName) ;
+
 
             if (obra != null){
+                System.out.println("pase ");
                 response = agregarABase();
 
             }
@@ -250,7 +252,8 @@ public class ArtsResource {
         String uploadPath = "";
         try {
             // Complementing servlet path with the relative path on the server
-            uploadPath = context.getRealPath("") + UPLOAD_DIRECTORY+currentCollection;
+            uploadPath = context.getRealPath("") + UPLOAD_DIRECTORY+"artes";
+            System.out.println("Path: "+ uploadPath);
 
             // Creating the upload folder, if not exist
             File uploadDir = new File(uploadPath);
@@ -287,7 +290,7 @@ public class ArtsResource {
             System.out.println("=> consulting user..."+obra.getAuthor());
 
 
-            String sql = "SELECT * FROM user_arts u WHERE u.name = '" + obra.getAuthor() + "'";
+            String sql = "SELECT * FROM user_arts u WHERE u.email = '" + obra.getAuthor() + "'";
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -295,7 +298,7 @@ public class ArtsResource {
             while (rs.next()) {
                 email_encontrado = rs.getString("email");
             }
-            System.out.println(email_encontrado);
+            System.out.println(email_encontrado+" pase?");
 
             if (email_encontrado != ""){
                 System.out.println("entro a crear colleccion");
@@ -314,7 +317,7 @@ public class ArtsResource {
                         .build();
             }
             rs.close();
-            prestmt.close();
+            //prestmt.close();
             //consulting collection
             System.out.println("consulto collection");
             String sql4 = "SELECT * FROM collection_table u WHERE u.name = ? AND u.email = ?";
@@ -461,6 +464,42 @@ public class ArtsResource {
            }
        }
        return listaObras;
+    }
+
+
+    // Obtiene el número de likes de un arte
+    @GET
+    @Path("/{id_art}/likes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listTotalLikes(@PathParam("id_art") String id_art) {
+
+        Connection conn = null;
+        int cantidadLikes = 0;
+
+        try {
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            LikeService likeService = new LikeService(conn);
+            cantidadLikes = likeService.getLikesArt(id_art);
+
+            conn.close();
+
+        } catch (SQLException se) {
+            se.printStackTrace(); // Handling errors from database
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace(); // Handling errors from JDBC driver
+        } finally {
+            // Cleaning-up environment
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return Response.ok().entity(cantidadLikes).build();
     }
 
 }

@@ -1,7 +1,10 @@
 package co.edu.unbosque.restpinkart.resources;
 import co.edu.unbosque.restpinkart.dtos.ExceptionMessage;
+import co.edu.unbosque.restpinkart.dtos.Likes;
 import co.edu.unbosque.restpinkart.dtos.Usuario;
 import co.edu.unbosque.restpinkart.services.AgregarUsuario;
+import co.edu.unbosque.restpinkart.services.LikeService;
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -32,7 +35,7 @@ public class UsersResource {
 
     // Database credentials
     static final String USER = "postgres";
-    static final String PASS = "20031812";
+    static final String PASS = "1007101050";
 
 
     @GET
@@ -70,7 +73,7 @@ public class UsersResource {
             System.out.println("=> creating user...");
 
 
-            String sql = "INSERT INTO user_arts(name,email,rol,password) VALUES (?,?,?,?)";
+            String sql = "INSERT INTO user_arts(name,email,role,password,fcoins) VALUES (?,?,?,?,0)";
             prestmt = conn.prepareStatement(sql);
             prestmt.setString(1,usernameparam);
             prestmt.setString(2,emailparam);
@@ -143,7 +146,7 @@ public class UsersResource {
                 namers =rs.getString("name");
                 passwordrs = rs.getString("password");
                 fcoinsrs = rs.getInt("fcoins");
-                rolrs = rs.getString("rol");
+                rolrs = rs.getString("role");
                 emailrs = rs.getString("email");
 
                 Usuario temp = new Usuario(namers,passwordrs,rolrs,emailrs,fcoinsrs);
@@ -351,6 +354,88 @@ public class UsersResource {
         }
         return response;
     }*/
+
+    //Sin usar
+    /*@GET
+    @Path("/{username}/arts/{id_art}/likes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response likeUser(@PathParam("username") String username,@PathParam("id_art") String id_art) {
+
+        Connection conn = null;
+        boolean like = false;
+
+        try {
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            LikeService likeService = new LikeService(conn);
+            like = likeService.getUserLike( id_art,username);
+
+            conn.close();
+
+        } catch (SQLException se) {
+            se.printStackTrace(); // Handling errors from database
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace(); // Handling errors from JDBC driver
+        } finally {
+            // Cleaning-up environment
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return Response.ok().entity(like).build();
+    }
+*/
+    @POST
+    @Path("/{username}/arts/{id_art}/likes/like")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response operarLike(@PathParam("username") String username,@PathParam("id_art") String imagepath) {
+
+        Connection conn = null;
+        boolean like = false;
+        String result = "";
+        System.out.println("pase");
+        try {
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            LikeService likeService = new LikeService(conn);
+
+            //Obtiene el id del arte
+            int id_art = likeService.getIdArt(imagepath);
+
+            //Si ya le dio like a un arte
+            if(likeService.getUserLike(id_art,username)){
+                likeService.quitarLike(new Likes(username,String.valueOf(id_art)));
+                result = "-1";
+
+                //Si no ha dado like a un arte
+            }else{
+                likeService.generarLike(new Likes(username,String.valueOf(id_art)));
+                result = "1";
+            }
+
+            conn.close();
+
+        } catch (SQLException se) {
+            se.printStackTrace(); // Handling errors from database
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace(); // Handling errors from JDBC driver
+        } finally {
+            // Cleaning-up environment
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return Response.ok().entity(result).build();
+    }
 
 
 

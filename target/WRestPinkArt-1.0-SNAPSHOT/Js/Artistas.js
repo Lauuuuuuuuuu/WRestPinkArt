@@ -3,8 +3,12 @@ const form = document.querySelector("form")
 form.onsubmit = async (e)=> {
     e.preventDefault()
 
+    //Cambio Jp
+    //let email = sessionStorage.getItem('email')
+    //Cambio Jp
     let email = sessionStorage.getItem('email')
-    console.log(email)
+
+    console.log("cambié"+email)
     const formData =new FormData(form);
 
     try {

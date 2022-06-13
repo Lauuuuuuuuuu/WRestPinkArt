@@ -19,7 +19,9 @@ form.onsubmit = async (e)=> {
         });
         let result = await response.json();
         console.log(result);
-        sessionStorage.setItem('username',document.getElementById("name1").value)
+        //cambio username a email
+        sessionStorage.setItem('email',document.getElementById("email").value)
+        //
         sessionStorage.setItem('role',document.getElementById("roleInput").value);
         direction=window.sessionStorage.getItem('role');
         console.log(direction)
